@@ -1,0 +1,5273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Taller de Rebobinado — Ingresos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/heic-to@1.6.5/dist/iife/heic-to.js"></script>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+
+<style>
+:root {
+  --bg: #F3F1EC;
+  --bg-card: #FFFFFF;
+  --text: #1C2126;
+  --text-dim: #6B7480;
+   --accent: #525960;
+  --color-botones: #014BA0;
+  --accent-soft: #F0DCC9;
+  --green: #4B7A63;
+  --green-soft: #DCE8E0;
+  --amber: #B48A2E;
+  --amber-soft: #F0E5C9;
+  --border: #DDD8CE;
+  --danger: #A8432F;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1B1E22; --bg-card: #24282D; --text: #EDEDEA; --text-dim: #9AA0A6;
+    --accent: #D98A4E; --accent-soft: #3A2C20; --green: #7FAF95; --green-soft: #223129;
+    --amber: #D9B65E; --amber-soft: #332C1B; --border: #34383D; --danger: #D9695A;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1B1E22; --bg-card: #24282D; --text: #EDEDEA; --text-dim: #9AA0A6;
+  --accent: #D98A4E; --accent-soft: #3A2C20; --green: #7FAF95; --green-soft: #223129;
+  --amber: #D9B65E; --amber-soft: #332C1B; --border: #34383D; --danger: #D9695A;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+}
+.mono { font-family: 'IBM Plex Mono', monospace; }
+
+.wrap {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 20px 24px 100px;
+  box-sizing: border-box;
+}
+
+header { padding-top: env(safe-area-inset-top, 0px); }
+
+.title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 4px;
+  min-width: 0;
+}
+
+#logoTaller {
+  width: 150px !important;
+  height: 76px !important;
+  max-width: 40%;
+  object-fit: contain;
+  object-position: left center;
+  flex-shrink: 0;
+}
+
+#nombreTaller {
+  min-width: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+h1 { font-size: 21px; font-weight: 700; margin: 0; letter-spacing: -0.01em; }
+.sub { color: var(--text-dim); font-size: 13px; margin: 0 0 18px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+.stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+.stat b { display: block; font-size: 22px; font-weight: 700; }
+.stat span { font-size: 12px; color: var(--text-dim); }
+.controls { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+input[type=text], input[type=search] {
+  background: var(--bg-card); border: 1px solid var(--border); color: var(--text);
+  border-radius: 8px; padding: 9px 12px; font-size: 14px; font-family: inherit; flex: 1; min-width: 140px;
+}
+.pills { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; margin-bottom: 14px; -webkit-overflow-scrolling: touch; }
+.pill {
+  border: 1px solid var(--border); background: var(--bg-card); color: var(--text-dim);
+  padding: 6px 12px; border-radius: 999px; font-size: 12.5px; white-space: nowrap; cursor: pointer;
+  font-weight: 500;
+}
+.pill.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+button { font-family: inherit; cursor: pointer; }
+ .btn-new {
+  background: var(--color-botones); color: #fff; border: none; border-radius: 9px;
+  padding: 10px 16px; font-size: 14px; font-weight: 600; width: 100%; margin-bottom: 16px;
+}
+.btn-new:active { opacity: 0.85; }
+.card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 14px 14px 12px; margin-bottom: 10px; border-left: 3px solid var(--accent);
+}
+.card-top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+.ord { font-size: 12px; color: var(--text-dim); }
+.cliente { font-weight: 600; font-size: 15.5px; margin: 2px 0 3px; }
+.motor-line { font-size: 13.5px; color: var(--text-dim); }
+.falla { font-size: 13px; margin-top: 6px; }
+.card-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+.badge { font-size: 11.5px; font-weight: 600; padding: 4px 9px; border-radius: 999px; }
+.badge-Recibido { background: var(--amber-soft); color: var(--amber); }
+.badge-Diagnóstico { background: var(--amber-soft); color: var(--amber); }
+.badge-Rebobinado { background: var(--accent-soft); color: var(--accent); }
+.badge-Listo { background: var(--green-soft); color: var(--green); }
+.badge-Entregado { background: var(--border); color: var(--text-dim); }
+.total { font-weight: 600; font-size: 14px; }
+.detail { border-top: 1px solid var(--border); margin-top: 10px; padding-top: 10px; display: none; }
+.detail.open { display: block; }
+.row2 { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+select {
+  background: var(--bg-card); border: 1px solid var(--border); color: var(--text);
+  border-radius: 8px; padding: 7px 10px; font-size: 13px; font-family: inherit;
+}
+.detail-actions { display: flex; gap: 8px; margin-top: 8px; }
+.btn-sm {
+  border: 1px solid var(--border); background: transparent; color: var(--text-dim);
+  border-radius: 7px; padding: 7px 11px; font-size: 12.5px;
+}
+.btn-sm.danger { color: var(--danger); border-color: var(--danger); }
+.empty { text-align: center; color: var(--text-dim); font-size: 14px; padding: 40px 10px; }
+.overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none;
+  align-items: flex-end; justify-content: center; z-index: 10;
+}
+.overlay.open { display: flex; }
+.sheet {
+  background: var(--bg-card); width: 100%; max-width: 760px; border-radius: 16px 16px 0 0;
+  padding: 18px 16px calc(20px + env(safe-area-inset-bottom, 0px)); max-height: 88vh; overflow-y: auto;
+}
+/* Ampliar fichas administrativas en computadora */
+.sheet-amplia {
+  max-width: 1000px;
+}
+
+/* En celulares, conservar el ancho disponible */
+@media (max-width: 600px) {
+  .sheet-amplia {
+    max-width: 100%;
+  }
+}
+/* Ficha de edición de orden: ampliar en computadora */
+#overlay .sheet {
+  max-width: 1000px;
+  border-radius: 16px;
+}
+.sheet h2 { font-size: 17px; margin: 0 0 14px; }
+.field { margin-bottom: 11px; }
+.field label { display: block; font-size: 12.5px; color: var(--text-dim); margin-bottom: 4px; }
+.field input, .field select, .field textarea {
+  width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text);
+  border-radius: 8px; padding: 9px 11px; font-size: 14px; font-family: inherit;
+}
+.field textarea { resize: vertical; min-height: 50px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+/* Campos de texto completos en Motores eléctricos */
+.grid2 > .campo-ancho-completo {
+  grid-column: 1 / -1;
+}
+#camposTecnicos > .campo-ancho-completo {
+  grid-column: 1 / -1;
+}
+/* Campos técnicos: dos columnas en pantallas amplias */
+#camposTecnicos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+/* En celulares, conservar una sola columna */
+@media (max-width: 600px) {
+  #camposTecnicos {
+    grid-template-columns: 1fr;
+  }
+}
+.sheet-actions { display: flex; gap: 10px; margin-top: 14px; }
+.btn-primary {
+ background: var(--color-botones);  color: #fff; border: none; border-radius: 9px;
+  padding: 11px; font-size: 14.5px; font-weight: 600; flex: 1;
+}
+/* Botón Abrir Orden: un tercio centrado en vista Lista */
+#list .detail-actions {
+  display: flex;
+  justify-content: center;
+}
+
+#list .detail-actions .btn-primary {
+  width: 33.333% !important;
+  flex: 0 0 33.333%;
+}
+
+/* Ficha de la orden: diseño compacto */
+#ordenFichaOverlay .sheet {
+  width: 96%;
+  max-width: 1000px;
+  padding: 14px 16px;
+  max-height: 92vh;
+}
+
+#ordenFichaOverlay .sheet h2 {
+  margin-bottom: 10px;
+}
+.btn-cancel {
+  background: transparent; border: 1px solid var(--border); color: var(--text-dim);
+  border-radius: 9px; padding: 11px; font-size: 14.5px; flex: 0 0 90px;
+}
+.fotos-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.foto-thumb { position: relative; width: 62px; height: 62px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+.foto-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.foto-thumb .rm {
+  position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); color: #fff;
+  border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 12px; line-height: 1;
+}
+.foto-add {
+  width: 62px; height: 62px; border-radius: 8px; border: 1px dashed var(--border);
+  display: flex; align-items: center; justify-content: center; color: var(--text-dim);
+  font-size: 22px; background: transparent; position: relative; overflow: hidden;
+}
+.card-fotos { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.card-fotos img { width: 52px; height: 52px; border-radius: 7px; object-fit: cover; border: 1px solid var(--border); }
+.lightbox {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none;
+  align-items: center; justify-content: center; z-index: 20; padding: 20px;
+}
+.lightbox.open { display: flex; }
+.lightbox img { max-width: 100%; max-height: 85vh; border-radius: 8px; }
+.btn-sm.busy { opacity: 0.6; pointer-events: none; }
+.mat-row {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+  padding: 7px 10px; margin-bottom: 6px;
+}
+.mat-row .mline { font-size: 13px; }
+.mat-row .mright { display: flex; align-items: center; gap: 8px; }
+.mat-row strong { font-size: 13px; }
+.chip-rm {
+  border: none; background: var(--border); color: var(--text); border-radius: 50%;
+  width: 20px; height: 20px; font-size: 12px; line-height: 1; flex-shrink: 0;
+}
+.cat-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); gap: 10px; }
+.mat-total { text-align: right; font-size: 13px; font-weight: 600; margin-top: 4px; }
+/* ===== LISTA DE ÓRDENES COMPACTA ===== */
+
+.card {
+  position: relative;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  border-radius: 9px;
+}
+
+.card-top {
+  display: block;
+  padding-right: 105px;
+}
+
+.ord {
+  font-size: 10.5px;
+  line-height: 1.2;
+  margin-bottom: 2px;
+}
+
+.cliente {
+  font-size: 14px;
+  line-height: 1.2;
+  margin: 0 0 2px;
+}
+
+.motor-line {
+  font-size: 11.5px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.falla {
+  display: none;
+}
+
+.card-bottom {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  margin: 0;
+}
+
+.badge {
+  font-size: 10px;
+  padding: 3px 7px;
+}
+
+.total {
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+/* Mantener el detalle expandido con su tamaño normal */
+.detail {
+  margin-top: 8px;
+}
+
+.detail.open {
+  display: block;
+}
+/* Ocultar selectores de campos numéricos */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+@media (max-width: 600px) {
+  .title-row {
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  #logoTaller {
+    width: 180px !important;
+    height: 90px !important;
+    max-width: 75%;
+    object-position: left center;
+  }
+
+  #nombreTaller {
+    width: 100%;
+    text-align: left;
+    font-size: 24px;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
+  header .sub {
+    margin-bottom: 18px;
+  }
+}
+
+/* ===== SELECTOR DE VISTAS: LISTA / KANBAN ===== */
+.view-switch {
+  display: flex;
+  gap: 6px;
+  margin: 12px 0;
+  padding: 4px;
+  width: fit-content;
+  max-width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.view-btn {
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 8px 13px;
+  background: transparent;
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.view-btn.active {
+  background: var(--color-botones);
+  color: #fff;
+}
+
+.view-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  .view-switch {
+    width: 100%;
+  }
+
+  .view-btn {
+    flex: 1;
+    min-height: 40px;
+  }
+}
+
+/* ===== TABLERO KANBAN ===== */
+#kanban:not([hidden]) {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px 2px 14px;
+  min-width: 0;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.kanban-column {
+  flex: 0 0 260px;
+  min-width: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px;
+}
+
+.kanban-column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 2px 6px;
+  font-size: 13px;
+}
+
+.kanban-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--border);
+  color: var(--text);
+  font-size: 11px;
+}
+
+.kanban-column-body {
+  min-height: 70px;
+}
+
+
+.kanban-column .card {
+  width: 100%;
+  margin-bottom: 6px;
+  padding: 7px 8px;
+  border-left-width: 3px;
+}
+
+.kanban-column .card-top {
+  display: block;
+  padding-right: 0;
+}
+
+
+.kanban-column .card-identificacion {
+  min-width: 0;
+  flex: 1;
+}
+
+.kanban-column .card-fecha {
+  flex-shrink: 0;
+  text-align: right;
+  color: var(--text-dim);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.kanban-column .cliente {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+
+.kanban-column .ord {
+  font-size: 11px;
+}
+
+.kanban-column .cliente {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.kanban-column .motor-line {
+  white-space: normal;
+}
+
+.kanban-column .card-bottom {
+  position: static;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+
+.kanban-column .row2 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 5px;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.kanban-column .row2 strong {
+  flex-shrink: 0;
+}
+
+
+.kanban-column .sel-estado {
+  max-width: 100%;
+}
+
+.kanban-empty {
+  padding: 18px 6px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 12px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+}
+
+@media (max-width: 600px) {
+  .kanban-column {
+    flex-basis: min(82vw, 300px);
+  }
+
+  .kanban-column .detail-actions {
+    flex-wrap: wrap;
+  }
+}
+
+
+#btnNew {
+  display: block;
+  width: 33.333%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 600px) {
+  #btnNew {
+    width: 70%;
+  }
+}
+
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  
+<header>
+  <div class="title-row" id="encabezadoTaller">
+    <img
+      id="logoTaller"
+      alt="Logotipo del taller"
+      hidden
+      
+
+style="width:140px;height:76px;max-width:38vw;object-fit:contain;object-position:left center;border-radius:8px;flex-shrink:0;"
+
+
+    >
+    <h1 id="nombreTaller">Taller de Rebobinado</h1>
+  </div>
+  <p class="sub">Gestión y seguimiento del taller</p>
+</header>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="controls">
+    <input type="search" id="search" placeholder="Buscar cliente o motor…">
+    <button type="button" class="btn-sm" id="btnClientes" style="display:inline-flex; align-items:center; gap:6px;">
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+    <circle cx="9" cy="7" r="4"></circle>
+    <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+  </svg>
+  Clientes
+</button>
+    <button type="button" class="btn-sm" id="btnCatalogo" style="white-space:nowrap;">📦 Materiales</button>
+    <button type="button" class="btn-sm" id="btnConfiguracion">⚙️ Configuración</button>
+  </div>
+  <div class="pills" id="pills"></div>
+
+  
+<button class="btn-new" id="btnNew">+ Nuevo ingreso</button>
+
+
+<div class="view-switch" role="group" aria-label="Vista de órdenes">
+  <button type="button" id="btnVistaLista" class="view-btn active">
+    ☷ Lista
+  </button>
+  <button type="button" id="btnVistaKanban" class="view-btn">
+    ▦ KANBAN
+  </button>
+</div>
+
+<div id="list"></div>
+
+<div id="kanban" hidden></div>
+
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="sheet">
+    <h2 id="sheetTitle">Nuevo ingreso</h2>
+  <div class="field">
+  <label>Cliente</label>
+  <select id="f-cliente">
+    <option value="">Seleccionar cliente...</option>
+  </select>
+</div>
+<div class="grid2">
+  <div class="field">
+    <label>Teléfono</label>
+    <input id="f-telefono" placeholder="Opcional">
+  </div>
+  <div class="field">
+    <label>NIT</label>
+    <input id="f-nit" placeholder="Ej. 1234567-8">
+  </div>
+</div>
+   
+    <div id="camposTecnicos"></div>
+   
+    <div class="field">
+      <label>Materiales usados</label>
+      <div id="itemsMateriales"></div>
+      <div class="row2" style="flex-wrap:nowrap; margin-top:4px;">
+        <select id="matSelect" style="flex:1;"></select>
+        <input id="matCantidad" type="number" inputmode="decimal" placeholder="Cant." style="width:64px; flex:none;">
+        <button type="button" class="btn-sm" id="btnAddMat" style="flex:none;">+ Agregar</button>
+      </div>
+      <div class="mat-total">Total materiales: <span id="matTotalLabel">Q0</span></div>
+    </div>
+    <div class="field"><label>Horas mano de obra</label><input id="f-horas" type="number" inputmode="decimal" placeholder="0"></div>
+    <div class="mat-total">Mano de obra: <span id="manoObraLabel">Q0</span></div>
+    <div class="field"><label>Tarifa mano de obra (<span id="monedaTarifa">Q</span>/h)</label><input id="f-tarifa" type="text" inputmode="decimal" placeholder="0"></div>
+    <div class="field">
+  <label>Margen / adicional (<span id="monedaMargen">Q</span>)</label>
+  <input id="f-margen" type="text" inputmode="decimal" placeholder="0">
+</div>
+<div class="field">
+  <label>Total presupuesto (<span id="monedaTotal">Q</span>)</label>
+  <input
+    id="f-total"
+    type="text"
+    inputmode="decimal"
+    placeholder="0"
+    readonly
+  >
+</div>
+
+<div class="field">
+  <label>Facturación final (<span id="monedaFacturacion">Q</span>)</label>
+  <input
+    id="f-facturacion-final"
+    type="text"
+    inputmode="decimal"
+    placeholder="0"
+    step="0.01"
+  >
+</div>
+    <div class="field"><label>Notas</label><textarea id="f-notas" placeholder="Opcional"></textarea></div>
+    <div class="field">
+      <label>Fotos del motor</label>
+      <div class="fotos-row" id="fotosRow"></div>
+      <input type="file" id="f-foto-input" accept="image/*" capture="environment" style="display:none">
+      <input type="file" id="f-archivo-input" accept="image/*" multiple style="display:none">
+    </div>
+    <div class="sheet-actions">
+      <button class="btn-cancel" id="btnCancel">Cancelar</button>
+      <button class="btn-primary" id="btnSave">Guardar ingreso</button>
+    </div>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox"><img id="lightboxImg" src=""></div>
+
+<div class="overlay" id="catOverlay">
+  <div class="sheet sheet-amplia">
+    <h2>Catálogo de materiales</h2>
+    <div class="grid2">
+      <div class="field"><label>Nombre</label><input id="cat-nombre" placeholder="Ej. Alambre esmaltado 18AWG"></div>
+      <div class="field"><label>Unidad</label><input id="cat-unidad" placeholder="Ej. lb, m, unidad"></div>
+    </div>
+    <div class="field"><label>Precio unitario (<span id="monedaPrecioMaterial">Q</span>)</label><input id="cat-precio" type="number" inputmode="decimal" placeholder="0"></div>
+    <div class="sheet-actions">
+      <button class="btn-primary" id="btnCatSave">Agregar material</button>
+    </div>
+    <div id="catList" style="margin-top:16px;"></div>
+    <div class="sheet-actions" style="margin-top:14px;">
+      <button class="btn-cancel" id="btnCatClose" style="flex:1;">Cerrar</button>
+    </div>
+  </div>
+</div>
+<div class="overlay" id="clientesOverlay">
+  <div class="sheet sheet-amplia">
+    <h2>Clientes</h2>
+
+    <div class="field">
+      <label>Nombre / Razón social</label>
+      <input id="cli-nombre" placeholder="Ej. Industrias ABC">
+    </div>
+
+    <div class="grid2">
+      <div class="field">
+        <label>NIT</label>
+        <input id="cli-nit" placeholder="Ej. 1234567-8">
+      </div>
+
+      <div class="field">
+        <label>Teléfono</label>
+        <input id="cli-telefono" placeholder="Ej. 5555-5555">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Dirección</label>
+      <input id="cli-direccion" placeholder="Dirección del cliente">
+    </div>
+
+    <div class="field">
+      <label>Notas</label>
+      <textarea id="cli-notas" placeholder="Información adicional"></textarea>
+    </div>
+
+  <div class="sheet-actions">
+  <button class="btn-primary" id="btnCliSave">Agregar cliente</button>
+
+  <button
+    class="btn-cancel"
+    id="btnCliCancelEdit"
+    style="display:none;">
+    Cancelar actualización
+  </button>
+</div>
+
+    <div id="clientesList" style="margin-top:16px;"></div>
+
+    <div class="sheet-actions" style="margin-top:14px;">
+      <button class="btn-cancel" id="btnCliClose" style="flex:1;">Cerrar</button>
+    </div>
+  </div>
+</div>
+<!-- FICHA DEL CLIENTE -->
+<div class="overlay" id="clienteFichaOverlay">
+  <div class="sheet sheet-amplia">
+    <h2>Ficha del cliente</h2>
+
+    <div id="clienteFichaContenido"></div>
+
+    <div class="sheet-actions" style="margin-top:14px;">
+      <button
+        class="btn-cancel"
+        id="btnCerrarFichaCliente"
+        style="flex:1;">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
+<!-- FICHA DE LA ORDEN -->
+<div class="overlay" id="ordenFichaOverlay">
+  <div class="sheet">
+
+    <h2>Ficha de la Orden</h2>
+
+    <div id="ordenFichaContenido"></div>
+
+    <div class="sheet-actions" style="margin-top:14px; display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+
+      <button class="btn-primary" id="btnOrdenEditar">
+        Editar
+      </button>
+
+      <button class="btn-primary" id="btnOrdenPDF">
+        Exportar PDF
+      </button>
+
+      <button class="btn-danger" id="btnOrdenEliminar">
+        Eliminar
+      </button>
+
+      <button class="btn-cancel" id="btnOrdenCerrar">
+        Cerrar
+      </button>
+
+    </div>
+
+  </div>
+</div>
+<!-- CONFIGURACIÓN DEL TALLER -->
+<div class="overlay" id="configuracionOverlay">
+  <div class="sheet sheet-amplia">
+    <h2>Configuración</h2>
+
+    <div class="field">
+      <label>Nombre del taller</label>
+      <input
+        id="configNombreTaller"
+        type="text"
+        placeholder="Ej. Taller de Rebobinado"
+      >
+    </div>
+<div class="field">
+  <label>Tipo de taller</label>
+
+  <select id="configPerfilTaller">
+    <option value="motores-electricos">Motores eléctricos</option>
+    <option value="automotriz">Taller automotriz</option>
+    <option value="herreria">Herrería</option>
+    <option value="torno-industrial">Torno industrial</option>
+    <option value="carpinteria">Carpintería</option>
+  </select>
+
+  <div
+    style="
+      margin-top:6px;
+      font-size:12px;
+      color:var(--text-dim);
+      line-height:1.4;
+    "
+  >
+    Define los campos técnicos que utilizará este tipo de taller.
+  </div>
+</div>
+    <div class="field">
+      <label>Símbolo de moneda</label>
+      <input
+        id="configMoneda"
+        type="text"
+        placeholder="Ej. Q"
+        maxlength="5"
+      >
+    </div>
+    
+<div class="field">
+  <label for="configLogoTaller">Logotipo del taller</label>
+  <input
+    id="configLogoTaller"
+    type="file"
+    accept="image/png,image/jpeg,image/webp"
+  >
+  <div style="margin-top:10px;">
+    <img
+      id="vistaPreviaLogoTaller"
+      alt="Vista previa del logotipo"
+      hidden
+      style="max-width:160px;max-height:100px;object-fit:contain;border:1px solid var(--border);border-radius:8px;padding:6px;"
+    >
+  </div>
+  <button
+    type="button"
+    id="btnQuitarLogoTaller"
+    class="btn-cancel"
+    style="margin-top:8px;width:auto;"
+  >
+    Quitar logotipo
+  </button>
+</div>
+
+
+<div class="field">
+  <label for="configColorBotones">Color de los botones principales</label>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <input
+      id="configColorBotones"
+      type="color"
+      value="#014BA0"
+      style="width:64px;height:42px;padding:3px;flex:0 0 auto;"
+    >
+    <span id="vistaPreviaColorBotones" style="font-size:13px;color:var(--text-dim);">
+      Azul corporativo
+    </span>
+  </div>
+  <button
+    type="button"
+    id="btnRestaurarColorBotones"
+    class="btn-cancel"
+    style="margin-top:8px;width:auto;"
+  >
+    Restaurar color predeterminado
+  </button>
+</div>
+
+
+
+    
+<div class="sheet-actions" style="margin-top:14px;">
+  <button
+    type="button"
+    class="btn-cancel"
+    id="btnCancelarConfiguracion"
+    style="flex:1; min-width:0; min-height:44px; height:44px; box-sizing:border-box; color:var(--text-dim);">
+    Cerrar
+  </button>
+
+  <button
+    type="button"
+    class="btn-new"
+    id="btnGuardarConfiguracion"
+    style="flex:1; min-width:0; min-height:44px; height:44px; box-sizing:border-box; width:auto; margin-bottom:0; color:#fff;">
+    Guardar
+  </button>
+</div>
+
+    <div style="border-top:1px solid var(--border); margin-top:20px; padding-top:16px;">
+
+      <h3 style="font-size:15px; margin:0 0 6px;">
+        Respaldo de datos
+      </h3>
+
+      <p style="font-size:12.5px; color:var(--text-dim); line-height:1.5; margin:0 0 12px;">
+        Guarda una copia de tus órdenes, clientes y materiales para poder recuperarlos posteriormente.
+      </p>
+
+      <div class="sheet-actions">
+        <button
+          type="button"
+          class="btn-primary"
+          id="btnExportarRespaldo">
+          Exportar respaldo
+        </button>
+
+        <button
+          type="button"
+          class="btn-cancel"
+          id="btnRestaurarRespaldo"
+          style="flex:1;">
+          Restaurar respaldo
+        </button>
+      </div>
+
+      <input
+        type="file"
+        id="archivoRespaldo"
+        accept=".json,application/json"
+        style="display:none;">
+    </div>
+
+<script>
+ 
+const ESTADOS = ["Recibido", "Diagnóstico", "En proceso", "Listo", "Entregado"];
+let db = null;
+let downloadsCap = null;
+let ordenes = [];
+let filtroEstado = "Todos";
+let vistaActual = localStorage.getItem("vistaActual") || "lista";
+let busqueda = "";
+let openId = localStorage.getItem("ordenAbiertaId") || null;
+let editId = null;
+let editClienteId = null;
+let fotosActuales = [];
+let catalogo = [];
+let clientes = [];
+let catEditId = null;
+let itemsActuales = [];
+
+function fmtQ(n) {
+  n = Number(n) || 0;
+  const moneda = localStorage.getItem("monedaSimbolo") || "Q";
+  return moneda + n.toLocaleString("es-GT", {
+    minimumFractionDigits: 0
+  });
+}
+function obtenerNombreTaller() {
+  return localStorage.getItem("nombreTaller") || "Taller de Rebobinado";
+}
+
+
+function renderNombreTaller() {
+  const el = document.getElementById("nombreTaller");
+  if (el) {
+    el.textContent = obtenerNombreTaller();
+  }
+
+  renderLogoTaller();
+}
+
+function cargarColorBotones() {
+  const colorGuardado = localStorage.getItem("colorBotones");
+  const colorValido =
+    colorGuardado && /^#[0-9A-Fa-f]{6}$/.test(colorGuardado)
+      ? colorGuardado
+      : "#014BA0";
+
+  document.documentElement.style.setProperty(
+    "--color-botones",
+    colorValido
+  );
+
+  const selector = document.getElementById("configColorBotones");
+  const vistaPrevia = document.getElementById("vistaPreviaColorBotones");
+
+  if (selector) {
+    selector.value = colorValido;
+  }
+
+  if (vistaPrevia) {
+    vistaPrevia.textContent =
+      colorValido.toUpperCase() === "#014BA0"
+        ? "Azul corporativo"
+        : colorValido.toUpperCase();
+  }
+}
+
+
+function renderLogoTaller() {
+  const logo = document.getElementById("logoTaller");
+  const logoGuardado = localStorage.getItem("logoTaller");
+
+  if (!logo) return;
+
+  if (logoGuardado) {
+    logo.src = logoGuardado;
+    logo.hidden = false;
+  } else {
+    logo.removeAttribute("src");
+    logo.hidden = true;
+  }
+}
+
+function renderEtiquetasMoneda() {
+  const moneda = localStorage.getItem("monedaSimbolo") || "Q";
+
+  const tarifa = document.getElementById("monedaTarifa");
+  const margen = document.getElementById("monedaMargen");
+  const total = document.getElementById("monedaTotal");
+  const facturacion = document.getElementById("monedaFacturacion");
+  const precioMaterial = document.getElementById("monedaPrecioMaterial");
+
+  if (tarifa) tarifa.textContent = moneda;
+  if (margen) margen.textContent = moneda;
+  if (total) total.textContent = moneda;
+  if (facturacion) facturacion.textContent = moneda;
+  if (precioMaterial) precioMaterial.textContent = moneda;
+}
+
+
+ 
+function renderCamposTecnicos(perfilId = null) {
+  const contenedor = document.getElementById("camposTecnicos");
+  if (!contenedor) return;
+
+  const perfilSeleccionado =
+    perfilId ||
+    localStorage.getItem("perfilTaller") ||
+    "motores-electricos";
+
+  const perfil = PERFILES_TALLER[perfilSeleccionado];
+
+  if (!perfil || !perfil.campos) {
+    contenedor.innerHTML = "";
+    return;
+  }
+
+  contenedor.innerHTML = perfil.campos
+    .map(campo => {
+      const requerido = campo.obligatorio ? "required" : "";
+      
+
+const esMedidaDecimalHerreria =
+  perfilSeleccionado === "herreria" &&
+  ["espesor", "largo", "ancho", "alto"].includes(campo.id);
+
+const esMedidaDecimalTorno =
+  perfilSeleccionado === "torno-industrial" &&
+  ["diametro", "longitud", "tolerancia", "diametroInterior"].includes(campo.id);
+
+  
+const esMedidaDecimalCarpinteria =
+  perfilSeleccionado === "carpinteria" &&
+  ["largo", "ancho", "alto", "espesor"].includes(campo.id);
+
+
+
+const esMedidaDecimal =
+  esMedidaDecimalHerreria ||
+  esMedidaDecimalTorno ||
+  esMedidaDecimalCarpinteria;
+
+
+
+
+    const esMultilinea = [
+  "diagnostico",
+  "trabajoRealizado",
+  "observaciones",
+  "falla"
+].includes(campo.id);
+
+const ocupaTodaLaLinea =
+  perfilSeleccionado === "motores-electricos" &&
+  esMultilinea;
+
+      if (campo.tipo === "select") {
+        const opciones = (campo.opciones || [])
+          .map(opcion => `
+            <option value="${escapeHtml(opcion)}">
+              ${escapeHtml(opcion)}
+            </option>
+          `)
+          .join("");
+
+        return `
+          <div class="field">
+            <label>
+              ${escapeHtml(campo.nombre)}
+              ${campo.obligatorio ? " *" : ""}
+            </label>
+
+            <select
+              id="f-${escapeHtml(campo.id)}"
+              ${requerido}
+            >
+              <option value="">Seleccionar...</option>
+              ${opciones}
+            </select>
+          </div>
+        `;
+      }
+
+      if (esMultilinea) {
+        return `
+         <div class="field ${ocupaTodaLaLinea ? "campo-ancho-completo" : ""}"> 
+            <label>
+              ${escapeHtml(campo.nombre)}
+              ${campo.obligatorio ? " *" : ""}
+            </label>
+
+            <textarea
+              id="f-${escapeHtml(campo.id)}"
+              ${requerido}
+              placeholder="${escapeHtml(campo.nombre)}"
+              rows="4"
+            ></textarea>
+          </div>
+        `;
+      }
+
+    
+const tipoInput = esMedidaDecimal
+  ? "text"
+  : campo.tipo === "number"
+    ? "number"
+    : "text";
+
+return `
+  <div class="field">
+    <label>
+      ${escapeHtml(campo.nombre)}
+      ${campo.obligatorio ? " *" : ""}
+    </label>
+
+    <input
+      id="f-${escapeHtml(campo.id)}"
+      type="${tipoInput}"
+      ${esMedidaDecimal ? 'inputmode="decimal"' : ""}
+      ${campo.tipo === "number" && !esMedidaDecimal ? 'step="0.01"' : ""}
+      ${requerido}
+      placeholder="${escapeHtml(campo.nombre)}"
+    >
+  </div>
+`;
+
+    })
+    .join("");
+}
+
+// ============================================================
+// PERFILES TÉCNICOS DE TALLER
+// ============================================================
+
+const PERFILES_TALLER = {
+
+ "motores-electricos": {
+  nombre: "Motores eléctricos",
+  campos: [
+    {
+    id: "tipo",
+      nombre: "Tipo de motor",
+      tipo: "select",
+      obligatorio: false,
+      opciones: [
+        "Monofásico",
+        "Trifásico",
+        "Corriente continua (DC)",
+        "Motorreductor",
+        "Motor con freno",
+        "Bomba de agua",
+        "Motor Blower",
+        "Otro"
+      ]
+    },
+    {
+      id: "marca",
+      nombre: "Marca",
+      tipo: "text",
+      obligatorio: false
+    },
+    {
+      id: "modelo",
+      nombre: "Modelo",
+      tipo: "text",
+      obligatorio: false
+    },
+    {
+      id: "numeroSerie",
+      nombre: "Número de serie",
+      tipo: "text",
+      obligatorio: false
+    },
+    {
+      id: "potencia",
+      nombre: "Potencia",
+      tipo: "number",
+      obligatorio: false
+    },
+    {
+      id: "unidadPotencia",
+      nombre: "Unidad de potencia",
+      tipo: "select",
+      obligatorio: false,
+      opciones: ["HP", "kW"]
+    },
+    {
+      id: "voltaje",
+      nombre: "Voltaje",
+      tipo: "text",
+      obligatorio: false
+    },
+    {
+      id: "frecuencia",
+      nombre: "Frecuencia",
+      tipo: "select",
+      obligatorio: false,
+      opciones: ["50 Hz", "60 Hz", "Otra"]
+    },
+    {
+      id: "fases",
+      nombre: "Fases",
+      tipo: "select",
+      obligatorio: false,
+      opciones: ["1", "3", "Otra"]
+    },
+  
+   {
+  id: "corriente",
+  nombre: "Amperios",
+  tipo: "number",
+  obligatorio: false
+},
+   
+    {
+      id: "rpm",
+      nombre: "RPM",
+      tipo: "number",
+      obligatorio: false
+    },
+    {
+      id: "claseAislamiento",
+      nombre: "Clase de aislamiento",
+      tipo: "select",
+      obligatorio: false,
+      opciones: ["A", "B", "F", "H", "Otra"]
+    },
+    {
+  id: "frame",
+  nombre: "Frame",
+  tipo: "text",
+  obligatorio: false
+},
+    {
+  id: "falla",
+  nombre: "Falla reportada",
+  tipo: "text",
+  obligatorio: false
+},
+    {
+      id: "diagnostico",
+      nombre: "Diagnóstico técnico",
+      tipo: "text",
+      obligatorio: false
+    },
+    {
+      id: "trabajoRealizado",
+      nombre: "Trabajo realizado",
+      tipo: "text",
+      obligatorio: false
+    },
+    {
+  id: "observaciones",
+  nombre: "Observaciones",
+  tipo: "text",
+  obligatorio: false
+},
+  ]
+},
+
+  "automotriz": {
+    nombre: "Taller automotriz",
+
+    campos: [
+      {
+        id: "tipoVehiculo",
+        nombre: "Tipo de vehículo",
+        tipo: "select",
+        obligatorio: false,
+        opciones: [
+          "Sedán",
+          "Pickup",
+          "SUV",
+          "Camión",
+          "Motocicleta",
+          "Otro"
+        ]
+      },
+      {
+        id: "marca",
+        nombre: "Marca",
+        tipo: "text",
+        obligatorio: false
+      },
+      {
+        id: "modelo",
+        nombre: "Modelo",
+        tipo: "text",
+        obligatorio: false
+      },
+      {
+  id: "color",
+  nombre: "Color",
+  tipo: "text",
+  obligatorio: false
+},
+      {
+        id: "anio",
+        nombre: "Año",
+        tipo: "number",
+        obligatorio: false
+      },
+      {
+        id: "placa",
+        nombre: "Placa",
+        tipo: "text",
+        obligatorio: false
+      },
+      {
+  id: "vin",
+  nombre: "VIN / Número de chasis",
+  tipo: "text",
+  obligatorio: false
+},
+      {
+        id: "kilometraje",
+        nombre: "Kilometraje",
+        tipo: "number",
+        obligatorio: false
+      },
+      {
+        id: "motor",
+        nombre: "Motor",
+        tipo: "text",
+        obligatorio: false
+      },
+      {
+        id: "cilindraje",
+        nombre: "Cilindraje",
+        tipo: "text",
+        obligatorio: false
+      },
+      {
+        id: "combustible",
+        nombre: "Combustible",
+        tipo: "select",
+        obligatorio: false,
+        opciones: [
+          "Gasolina",
+          "Diésel",
+          "Híbrido",
+          "Eléctrico",
+          "Otro"
+        ]
+      },
+      {
+        id: "transmision",
+        nombre: "Transmisión",
+        tipo: "select",
+        obligatorio: false,
+        opciones: [
+          "Manual",
+          "Automática",
+          "CVT",
+          "Otra"
+        ]
+      }
+    ]
+  },
+
+  "herreria": {
+    nombre: "Herrería",
+
+    campos: [
+      {
+        id: "tipoTrabajo",
+        nombre: "Tipo de trabajo",
+        tipo: "select",
+        obligatorio: false,
+        opciones: [
+          "Fabricación",
+          "Reparación",
+          "Instalación",
+          "Modificación",
+          "Otro"
+        ]
+      },
+      {
+        id: "material",
+        nombre: "Material",
+        tipo: "select",
+        obligatorio: false,
+        opciones: [
+          "Hierro",
+          "Acero",
+          "Acero inoxidable",
+          "Aluminio",
+          "Otro"
+        ]
+      },
+      {
+        id: "espesor",
+        nombre: "Espesor",
+        tipo: "number",
+        obligatorio: false,
+      },
+      {
+        id: "largo",
+        nombre: "Largo",
+        tipo: "number",
+        obligatorio: false
+      },
+      {
+        id: "ancho",
+        nombre: "Ancho",
+        tipo: "number",
+        obligatorio: false
+      },
+      {
+        id: "alto",
+        nombre: "Alto",
+        tipo: "number",
+        obligatorio: false
+      },
+      {
+        id: "unidadMedida",
+        nombre: "Unidad de medida",
+        tipo: "select",
+        obligatorio: false,
+        opciones: ["mm", "cm", "m" , "in"]
+      },
+      {
+        id: "cantidad",
+        nombre: "Cantidad",
+        tipo: "number",
+        obligatorio: false,
+        unidad: "unidades"
+      },
+      {
+        id: "acabado",
+        nombre: "Acabado",
+        tipo: "select",
+        obligatorio: false,
+        opciones: [
+          "Natural",
+          "Pintura",
+          "Galvanizado",
+          "Otro"
+        ]
+      }
+    ]
+  },
+
+  "torno-industrial": {
+    nombre: "Torno industrial",
+
+    campos: [
+      {
+        id: "tipoTrabajo",
+        nombre: "Tipo de trabajo",
+        tipo: "select",
+        obligatorio: false,
+        opciones: [
+          "Fabricación",
+          "Reparación",
+          "Rectificado",
+          "Roscado",
+          "Ranurado",
+          "Otro"
+        ]
+      },
+      {
+        id: "material",
+        nombre: "Material",
+        tipo: "select",
+        obligatorio: false,
+        opciones: [
+          "Acero",
+          "Acero inoxidable",
+          "Aluminio",
+          "Bronce",
+          "Latón",
+          "Otro"
+        ]
+      },
+    {
+  id: "diametro",
+  nombre: "Diámetro",
+  tipo: "number",
+  obligatorio: false
+},
+{
+  id: "longitud",
+  nombre: "Longitud",
+  tipo: "number",
+  obligatorio: false
+},
+{
+  id: "unidadMedida",
+  nombre: "Unidad de medida",
+  tipo: "select",
+  obligatorio: true,
+  opciones: [
+    "mm",
+    "cm",
+    "in",
+    "m"
+  ]
+},
+      {
+        id: "cantidad",
+        nombre: "Cantidad",
+        tipo: "number",
+        obligatorio: false,
+        unidad: "unidades"
+      },
+      {
+        id: "tolerancia",
+        nombre: "Tolerancia",
+        tipo: "text",
+        obligatorio: false
+      },
+      {
+        id: "rosca",
+        nombre: "Rosca",
+        tipo: "text",
+        obligatorio: false
+      },
+      {
+  id: "diametroInterior",
+  nombre: "Diámetro interior",
+  tipo: "number",
+  obligatorio: false
+},
+      {
+        id: "acabado",
+        nombre: "Acabado",
+        tipo: "text",
+        obligatorio: false
+      }
+    ]
+  },
+
+  "carpinteria": {
+    nombre: "Carpintería",
+
+    campos: [
+      {
+        id: "tipoTrabajo",
+        nombre: "Tipo de trabajo",
+        tipo: "select",
+        obligatorio: false,
+        opciones: [
+          "Fabricación",
+          "Reparación",
+          "Instalación",
+          "Restauración",
+          "Otro"
+        ]
+      },
+      {
+        id: "material",
+        nombre: "Material",
+        tipo: "select",
+        obligatorio: false,
+        opciones: [
+          "Madera sólida",
+          "MDF",
+          "Melamina",
+          "Plywood",
+          "Triplay",
+          "Otro"
+        ]
+      },
+      {
+        id: "largo",
+        nombre: "Largo",
+        tipo: "number",
+        obligatorio: false
+      },
+      {
+        id: "ancho",
+        nombre: "Ancho",
+        tipo: "number",
+        obligatorio: false
+      },
+      {
+        id: "alto",
+        nombre: "Alto",
+        tipo: "number",
+        obligatorio: false
+      },
+      {
+        id: "espesor",
+        nombre: "Espesor",
+        tipo: "number",
+        obligatorio: false,
+       },
+      {
+        id: "unidadMedida",
+        nombre: "Unidad de medida",
+        tipo: "select",
+        obligatorio: true,
+        opciones: ["mm", "cm", "m" , "in"]
+      },
+      {
+        id: "cantidad",
+        nombre: "Cantidad",
+        tipo: "number",
+        obligatorio: false,
+        unidad: "unidades"
+      },
+      {
+        id: "acabado",
+        nombre: "Acabado",
+        tipo: "select",
+        obligatorio: false,
+        opciones: [
+          "Natural",
+          "Barniz",
+          "Pintura",
+          "Laca",
+          "Laminado",
+          "Otro"
+        ]
+      }
+    ]
+  }
+
+};
+function abrirConfiguracion() {
+  const nombre = document.getElementById("configNombreTaller");
+  const moneda = document.getElementById("configMoneda");
+const perfil = document.getElementById("configPerfilTaller");
+  if (nombre) {
+    nombre.value = obtenerNombreTaller();
+  }
+
+  if (moneda) {
+    moneda.value = localStorage.getItem("monedaSimbolo") || "Q";
+  }
+if (perfil) {
+  perfil.value =
+    localStorage.getItem("perfilTaller") ||
+    "motores-electricos";
+}
+  document
+    .getElementById("configuracionOverlay")
+    .classList.add("open");
+}
+
+function cerrarConfiguracion() {
+  document
+    .getElementById("configuracionOverlay")
+    .classList.remove("open");
+}
+
+function guardarConfiguracion() {
+  const nombre = document
+    .getElementById("configNombreTaller")
+    .value
+    .trim();
+
+  const moneda = document
+    .getElementById("configMoneda")
+    .value
+    .trim();
+
+  const perfil = document
+    .getElementById("configPerfilTaller")
+    .value;
+
+  const vistaPrevia = document.getElementById("vistaPreviaLogoTaller");
+  const logoActual = localStorage.getItem("logoTaller") || "";
+
+  localStorage.setItem(
+    "nombreTaller",
+    nombre || "Taller de Rebobinado"
+  );
+
+  localStorage.setItem(
+    "monedaSimbolo",
+    moneda || "Q"
+  );
+
+  localStorage.setItem(
+    "perfilTaller",
+    perfil || "motores-electricos"
+  );
+  
+const selectorColor = document.getElementById("configColorBotones");
+const colorElegido = selectorColor
+  ? selectorColor.value
+  : "#014BA0";
+
+if (/^#[0-9A-Fa-f]{6}$/.test(colorElegido)) {
+  localStorage.setItem("colorBotones", colorElegido);
+  document.documentElement.style.setProperty(
+    "--color-botones",
+    colorElegido
+  );
+}
+
+
+  if (!vistaPrevia.hidden && vistaPrevia.src) {
+    try {
+      localStorage.setItem("logoTaller", vistaPrevia.src);
+    } catch (error) {
+      alert(
+        "No se pudo guardar el logotipo. La imagen puede ser demasiado grande " +
+        "para el almacenamiento disponible."
+      );
+      return;
+    }
+  } else if (logoActual) {
+    localStorage.setItem("logoTaller", logoActual);
+  }
+
+  render();
+  cerrarConfiguracion();
+}
+
+
+function fmtFecha(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString("es-GT", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
+}
+
+function ordenNumero(id) {
+  const orden = ordenes.find(o => o.id === id);
+
+  if (!orden) return "000";
+
+  // Usar el número permanente guardado en la orden
+  const numero = Number(orden.numeroOrden);
+
+  if (Number.isFinite(numero) && numero > 0) {
+    return String(numero).padStart(3, "0");
+  }
+
+  // Respaldo temporal para órdenes antiguas
+  // mientras se completa la migración.
+  const sorted = [...ordenes].sort(
+    (a, b) => new Date(a.fechaIngreso) - new Date(b.fechaIngreso)
+  );
+
+  const idx = sorted.findIndex(o => o.id === id);
+
+  return String(idx + 1).padStart(3, "0");
+}
+async function asegurarNumerosOrden() {
+  if (!db || !ordenes.length) return;
+
+  const ordenesSinNumero = ordenes.filter(o => {
+    const numero = Number(o.numeroOrden);
+    return !Number.isFinite(numero) || numero <= 0;
+  });
+
+  if (!ordenesSinNumero.length) return;
+
+  // Mantener el orden histórico de las órdenes existentes
+  const ordenadas = [...ordenes].sort(
+    (a, b) => new Date(a.fechaIngreso) - new Date(b.fechaIngreso)
+  );
+
+  // Buscar el número más alto que ya exista
+  let siguiente = ordenadas.reduce((max, o) => {
+    const numero = Number(o.numeroOrden);
+    return Number.isFinite(numero) && numero > max
+      ? numero
+      : max;
+  }, 0) + 1;
+
+  for (const orden of ordenadas) {
+    const numeroActual = Number(orden.numeroOrden);
+
+    if (Number.isFinite(numeroActual) && numeroActual > 0) {
+      continue;
+    }
+
+    const numeroAsignado = siguiente++;
+
+    orden.numeroOrden = numeroAsignado;
+
+    try {
+      await db.doc("ordenes/" + orden.id).update({
+        numeroOrden: numeroAsignado
+      });
+    } catch (e) {
+      console.error(
+        "No se pudo guardar el número permanente de la orden:",
+        orden.id,
+        e
+      );
+    }
+  }
+}
+
+function render() {
+  renderStats();
+  renderPills();
+
+  if (vistaActual === "kanban") {
+    renderKanban();
+  } else {
+    renderList();
+  }
+
+  renderNombreTaller();
+  renderEtiquetasMoneda();
+}
+
+
+function cambiarVista(nuevaVista) {
+  vistaActual = nuevaVista;
+  localStorage.setItem("vistaActual", vistaActual);
+
+  const list = document.getElementById("list");
+  const kanban = document.getElementById("kanban");
+  const btnLista = document.getElementById("btnVistaLista");
+  const btnKanban = document.getElementById("btnVistaKanban");
+
+  if (!list || !kanban || !btnLista || !btnKanban) return;
+
+  const esLista = vistaActual === "lista";
+
+  list.hidden = !esLista;
+  kanban.hidden = esLista;
+
+  btnLista.classList.toggle("active", esLista);
+  btnKanban.classList.toggle("active", !esLista);
+
+  if (esLista) {
+    renderList();
+  } else {
+    renderKanban();
+  }
+}
+
+document.getElementById("btnVistaLista").addEventListener("click", () => {
+  cambiarVista("lista");
+});
+
+document.getElementById("btnVistaKanban").addEventListener("click", () => {
+  cambiarVista("kanban");
+});
+
+function renderStats() {
+  const enTaller = ordenes.filter(o => !["Listo","Entregado"].includes(o.estado)).length;
+  const listos = ordenes.filter(o => o.estado === "Listo").length;
+  const now = new Date();
+  const esteMes = ordenes.filter(o => {
+    const d = new Date(o.fechaIngreso);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  }).length;
+  document.getElementById("stats").innerHTML = `
+    <div class="stat"><b>${enTaller}</b><span>En taller</span></div>
+    <div class="stat"><b>${listos}</b><span>Listos p/entregar</span></div>
+    <div class="stat"><b>${esteMes}</b><span>Ingresados este mes</span></div>
+  `;
+}
+
+function renderPills() {
+  const counts = { Todos: ordenes.length };
+  ESTADOS.forEach(e => counts[e] = ordenes.filter(o => o.estado === e).length);
+  const opts = ["Todos", ...ESTADOS];
+  document.getElementById("pills").innerHTML = opts.map(e =>
+    `<div class="pill ${e === filtroEstado ? "active" : ""}" data-estado="${e}">${e} (${counts[e]})</div>`
+  ).join("");
+  document.querySelectorAll(".pill").forEach(p => p.onclick = () => { filtroEstado = p.dataset.estado; render(); });
+}
+
+function renderList() {
+  let items = [...ordenes];
+  if (filtroEstado !== "Todos") items = items.filter(o => o.estado === filtroEstado);
+if (busqueda.trim()) {
+  const normalizar = (valor) =>
+    String(valor ?? "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "");
+
+  const q = normalizar(busqueda);
+
+  items = items.filter(o => {
+    const perfil = obtenerPerfilDeOrden(o);
+
+    const valoresTecnicos = (perfil?.campos || [])
+      .map(campo => o[campo.id])
+      .filter(valor =>
+        valor !== undefined &&
+        valor !== null &&
+        valor !== ""
+      );
+
+    const nombresMateriales = (o.materialesItems || [])
+      .flatMap(item => [
+        item.nombre,
+        item.unidad,
+        item.cantidad,
+        item.precio,
+        item.subtotal
+      ])
+      .filter(valor =>
+        valor !== undefined &&
+        valor !== null &&
+        valor !== ""
+      );
+
+    const texto = [
+      o.cliente,
+      o.nit,
+      o.telefono,
+      o.falla,
+      o.notas,
+      "ORD-" + ordenNumero(o.id),
+
+      ...valoresTecnicos,
+      ...nombresMateriales
+    ]
+      .map(normalizar)
+      .join(" ");
+
+    return texto.includes(q);
+  });
+}
+  items.sort((a,b) => new Date(b.fechaIngreso) - new Date(a.fechaIngreso));
+
+  const list = document.getElementById("list");
+  if (!items.length) {
+    list.innerHTML = `<div class="empty">Sin motores en esta vista. Toca "Nuevo ingreso" para registrar uno.</div>`;
+    return;
+  }
+list.innerHTML = items.map(o => cardHtml(o)).join("");
+
+  items.forEach(o => {
+    const card = document.getElementById("card-" + o.id);
+    card.querySelector(".card-top").onclick = () => {
+  openId = (openId === o.id ? null : o.id);
+  localStorage.setItem("ordenAbiertaId", openId || "");
+  render();
+};
+
+const cardBottom = card.querySelector(".card-bottom");
+
+if (cardBottom) {
+  cardBottom.onclick = () => {
+    openId = (openId === o.id ? null : o.id);
+    localStorage.setItem("ordenAbiertaId", openId || "");
+    render();
+  };
+}
+    const sel = card.querySelector(".sel-estado");
+    if (sel) sel.onchange = () => updateEstado(o.id, sel.value);
+    const delBtn = card.querySelector(".btn-del");
+    if (delBtn) delBtn.onclick = () => borrar(o.id);
+    const editBtn = card.querySelector(".btn-edit");
+    if (editBtn) editBtn.onclick = () => abrirSheetEditar(o.id);
+    const pdfBtn = card.querySelector(".btn-pdf");
+    if (pdfBtn) pdfBtn.onclick = () => exportarPDF(o.id, pdfBtn);
+    card.querySelectorAll(".foto-view").forEach(img => {
+      img.onclick = (e) => { e.stopPropagation(); abrirLightbox(img.dataset.url); };
+    });
+  });
+}
+
+function abrirLightbox(url) {
+  document.getElementById("lightboxImg").src = url;
+  document.getElementById("lightbox").classList.add("open");
+}
+document.getElementById("lightbox").onclick = () => document.getElementById("lightbox").classList.remove("open");
+
+function obtenerResumenEquipo(orden) {
+  const perfil = obtenerPerfilDeOrden(orden);
+
+  if (!perfil) {
+    return "Equipo";
+  }
+
+  // Identificar el perfil real de la orden.
+  // Esto también funciona con órdenes antiguas
+  // que no tengan perfilTaller.
+  const perfilId = Object.keys(PERFILES_TALLER).find(
+    id => PERFILES_TALLER[id] === perfil
+  );
+
+  let detalles = [];
+
+  // =====================================================
+  // MOTORES ELÉCTRICOS
+  // Marca · Potencia + unidad
+  // Ejemplo: Motores eléctricos · Baldor · 15 kW
+  // =====================================================
+  if (
+    perfilId === "motores-electricos" ||
+    perfil.nombre === "Motores eléctricos"
+  ) {
+    const marca = orden.marca
+      ? String(orden.marca).trim()
+      : "";
+
+    const potencia = orden.potencia
+      ? String(orden.potencia).trim()
+      : "";
+
+    const unidadPotencia = orden.unidadPotencia
+      ? String(orden.unidadPotencia).trim()
+      : "";
+
+    if (marca) {
+      detalles.push(marca);
+    }
+
+    if (potencia) {
+      detalles.push(
+        unidadPotencia
+          ? `${potencia} ${unidadPotencia}`
+          : potencia
+      );
+    }
+  }
+
+  // =====================================================
+  // AUTOMOTRIZ
+  // Tipo de vehículo · Marca · Modelo
+  // Ejemplo: Taller automotriz · SUV · Nissan · Sentra
+  // =====================================================
+  else if (perfilId === "automotriz") {
+    const tipoVehiculo = orden.tipoVehiculo
+      ? String(orden.tipoVehiculo).trim()
+      : "";
+
+    const marca = orden.marca
+      ? String(orden.marca).trim()
+      : "";
+
+    const modelo = orden.modelo
+      ? String(orden.modelo).trim()
+      : "";
+
+    if (tipoVehiculo) detalles.push(tipoVehiculo);
+    if (marca) detalles.push(marca);
+    if (modelo) detalles.push(modelo);
+  }
+
+  // =====================================================
+  // HERRERÍA
+  // Trabajo · Material · dimensiones
+  // Ejemplo:
+  // Herrería · Instalación · Hierro · 120 × 60 × 0.03 mm
+  // =====================================================
+  else if (perfilId === "herreria") {
+    const tipoTrabajo = orden.tipoTrabajo
+      ? String(orden.tipoTrabajo).trim()
+      : "";
+
+    const material = orden.material
+      ? String(orden.material).trim()
+      : "";
+
+    const largo = orden.largo
+      ? String(orden.largo).trim()
+      : "";
+
+    const ancho = orden.ancho
+      ? String(orden.ancho).trim()
+      : "";
+
+    const alto = orden.alto
+      ? String(orden.alto).trim()
+      : "";
+
+    const espesor = orden.espesor
+      ? String(orden.espesor).trim()
+      : "";
+
+    const unidad = orden.unidadMedida
+      ? String(orden.unidadMedida).trim()
+      : "";
+
+    if (tipoTrabajo) detalles.push(tipoTrabajo);
+    if (material) detalles.push(material);
+
+    const dimensiones = [];
+
+    if (largo) dimensiones.push(largo);
+    if (ancho) dimensiones.push(ancho);
+    if (alto) dimensiones.push(alto);
+
+    if (espesor) {
+      dimensiones.push(
+        "esp. " + espesor
+      );
+    }
+
+    if (dimensiones.length) {
+      detalles.push(
+        dimensiones.join(" × ") +
+        (unidad ? " " + unidad : "")
+      );
+    }
+  }
+
+  // =====================================================
+  // TORNO INDUSTRIAL
+  // Trabajo · Material · diámetro × longitud
+  // Ejemplo:
+  // Torno industrial · Rectificado · Acero inoxidable · Ø30 × 120 mm
+  // =====================================================
+  else if (perfilId === "torno-industrial") {
+    const tipoTrabajo = orden.tipoTrabajo
+      ? String(orden.tipoTrabajo).trim()
+      : "";
+
+    const material = orden.material
+      ? String(orden.material).trim()
+      : "";
+
+    const diametro = orden.diametro
+      ? String(orden.diametro).trim()
+      : "";
+
+    const longitud = orden.longitud
+      ? String(orden.longitud).trim()
+      : "";
+
+    if (tipoTrabajo) detalles.push(tipoTrabajo);
+    if (material) detalles.push(material);
+
+    const dimensiones = [];
+
+    if (diametro) {
+      dimensiones.push("Ø" + diametro);
+    }
+
+    if (longitud) {
+      dimensiones.push(longitud);
+    }
+
+    if (dimensiones.length) {
+      detalles.push(
+       dimensiones.join(" × ") + (orden.unidadMedida ? " " + orden.unidadMedida : "")
+      );
+    }
+  }
+
+  // =====================================================
+  // CARPINTERÍA
+  // Trabajo · Material · dimensiones
+  // Ejemplo:
+  // Carpintería · Fabricación · MDF · 120 × 60 × 18 mm
+  // =====================================================
+  else if (perfilId === "carpinteria") {
+    const tipoTrabajo = orden.tipoTrabajo
+      ? String(orden.tipoTrabajo).trim()
+      : "";
+
+    const material = orden.material
+      ? String(orden.material).trim()
+      : "";
+
+    const largo = orden.largo
+      ? String(orden.largo).trim()
+      : "";
+
+    const ancho = orden.ancho
+      ? String(orden.ancho).trim()
+      : "";
+
+    const alto = orden.alto
+      ? String(orden.alto).trim()
+      : "";
+
+    const espesor = orden.espesor
+      ? String(orden.espesor).trim()
+      : "";
+
+    const unidad = orden.unidadMedida
+      ? String(orden.unidadMedida).trim()
+      : "";
+
+    if (tipoTrabajo) detalles.push(tipoTrabajo);
+    if (material) detalles.push(material);
+
+    const dimensiones = [];
+
+    if (largo) dimensiones.push(largo);
+    if (ancho) dimensiones.push(ancho);
+    if (alto) dimensiones.push(alto);
+
+    if (espesor) {
+      dimensiones.push(
+        "esp. " + espesor
+      );
+    }
+
+    if (dimensiones.length) {
+      detalles.push(
+        dimensiones.join(" × ") +
+        (unidad ? " " + unidad : "")
+      );
+    }
+  }
+
+  // =====================================================
+  // PERFIL GENÉRICO
+  // Si en el futuro agregamos otro perfil y todavía
+  // no tiene una regla específica, utilizamos los
+  // primeros campos con información.
+  // =====================================================
+  else {
+    const valores = (perfil.campos || [])
+      .map(campo => ({
+        nombre: campo.nombre,
+        valor: orden[campo.id]
+      }))
+      .filter(item =>
+        item.valor !== undefined &&
+        item.valor !== null &&
+        String(item.valor).trim() !== ""
+      );
+
+    detalles = valores
+      .slice(0, 3)
+      .map(item => String(item.valor));
+  }
+
+  return perfil.nombre + (
+    detalles.length
+      ? " · " + detalles.join(" · ")
+      : ""
+  );
+}
+function cardHtml(o) {
+  return `
+    <div class="card" id="card-${o.id}">
+      
+      <!-- 1. IDENTIFICACIÓN DE LA ORDEN -->
+     
+<div class="card-top">
+  <div class="card-identificacion">
+    <div class="ord mono">
+      ORD-${ordenNumero(o.id)}
+    </div>
+
+    <div class="cliente">
+      ${escapeHtml(o.cliente || "Sin nombre")}
+    </div>
+  </div>
+
+  <div class="card-fecha">
+    ${fmtFecha(o.fechaIngreso)}
+  </div>
+</div>
+
+
+      <!-- 2. CLIENTE -->
+      <div class="row2" style="margin-top:8px;">
+        <strong>Cliente:</strong>
+        ${escapeHtml(o.cliente || "Sin cliente")}
+      </div>
+
+      <div class="row2" style="color:var(--text-dim); font-size:12.5px;">
+        ${o.nit
+          ? "NIT: " + escapeHtml(o.nit)
+          : "Sin NIT"}
+      </div>
+
+      <!-- 3. EQUIPO -->
+     <div class="row2" style="margin-top:8px;">
+  <strong>Equipo:</strong>
+  ${escapeHtml(obtenerResumenEquipo(o))}
+</div>
+
+     <!-- ESTADO DE LA ORDEN -->
+<div class="row2" style="margin-top:12px;">
+  <strong>Estado:</strong>
+  <select
+    class="sel-estado"
+    style="margin-left:8px; padding:6px 10px; border-radius:8px;"
+  >
+    ${ESTADOS.map(e =>
+      `<option value="${escapeHtml(e)}" ${o.estado === e ? "selected" : ""}>
+        ${escapeHtml(e)}
+      </option>`
+    ).join("")}
+  </select>
+</div>
+
+<!-- BOTÓN ABRIR ORDEN -->
+<div class="detail-actions" style="margin-top:12px; display:flex; justify-content:center;">
+  <button
+    type="button"
+    class="btn-primary"
+    style="width:33.333%;"
+    onclick="abrirFichaOrden('${o.id}')">
+    Abrir Orden
+  </button>
+</div>
+
+    </div>
+  `;
+}
+
+function renderKanban() {
+  const kanban = document.getElementById("kanban");
+  if (!kanban) return;
+
+  const normalizar = (valor) =>
+    String(valor ?? "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "");
+
+  let items = [...ordenes];
+
+  if (filtroEstado !== "Todos") {
+    items = items.filter(o => o.estado === filtroEstado);
+  }
+
+  if (busqueda.trim()) {
+    const q = normalizar(busqueda);
+
+    items = items.filter(o => {
+      const perfil = obtenerPerfilDeOrden(o);
+
+      const valoresTecnicos = (perfil?.campos || [])
+        .map(campo => o[campo.id])
+        .filter(valor => valor !== undefined && valor !== null && valor !== "");
+
+      const nombresMateriales = (o.materialesItems || [])
+        .flatMap(item => [
+          item.nombre,
+          item.unidad,
+          item.cantidad,
+          item.precio,
+          item.subtotal
+        ])
+        .filter(valor => valor !== undefined && valor !== null && valor !== "");
+
+      const texto = [
+        o.cliente,
+        o.nit,
+        o.telefono,
+        o.falla,
+        o.notas,
+        "ORD-" + ordenNumero(o.id),
+        ...valoresTecnicos,
+        ...nombresMateriales
+      ].map(normalizar).join(" ");
+
+      return texto.includes(q);
+    });
+  }
+
+  items.sort((a, b) =>
+    new Date(b.fechaIngreso) - new Date(a.fechaIngreso)
+  );
+
+  kanban.innerHTML = ESTADOS.map(estado => {
+    const ordenesEstado = items.filter(o => o.estado === estado);
+
+    return `
+      <section class="kanban-column">
+        <div class="kanban-column-header">
+          <strong>${escapeHtml(estado)}</strong>
+          <span class="kanban-count">${ordenesEstado.length}</span>
+        </div>
+        <div class="kanban-column-body">
+          ${ordenesEstado.length
+            ? ordenesEstado.map(o => cardHtml(o)).join("")
+            : '<div class="kanban-empty">Sin órdenes</div>'}
+        </div>
+      </section>
+    `;
+  }).join("");
+
+  
+  items.forEach(o => {
+    const card = kanban.querySelector(
+      "#card-" + CSS.escape(String(o.id))
+    );
+    if (!card) return;
+
+    const sel = card.querySelector(".sel-estado");
+    if (sel) {
+      sel.onchange = () => updateEstado(o.id, sel.value);
+    }
+
+    const openBtn = card.querySelector(".btn-primary");
+    if (openBtn) {
+      openBtn.onclick = (e) => {
+        e.stopPropagation();
+        abrirFichaOrden(o.id);
+      };
+    }
+
+    const delBtn = card.querySelector(".btn-del");
+    if (delBtn) {
+      delBtn.onclick = () => borrar(o.id);
+    }
+
+    const editBtn = card.querySelector(".btn-edit");
+    if (editBtn) {
+      editBtn.onclick = () => abrirSheetEditar(o.id);
+    }
+
+    const pdfBtn = card.querySelector(".btn-pdf");
+    if (pdfBtn) {
+      pdfBtn.onclick = () => exportarPDF(o.id, pdfBtn);
+    }
+
+    card.querySelectorAll(".foto-view").forEach(img => {
+      img.onclick = (e) => {
+        e.stopPropagation();
+        abrirLightbox(img.dataset.url);
+      };
+    });
+  });
+
+}
+
+
+function escapeHtml(s) {
+  return String(s || "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+
+async function updateEstado(id, nuevo) {
+  const idx = ordenes.findIndex(x => x.id === id);
+  if (idx === -1) return;
+
+  const estadoAnterior = ordenes[idx].estado;
+
+  // Actualización inmediata en la interfaz
+  ordenes[idx] = {
+    ...ordenes[idx],
+    estado: nuevo
+  };
+
+  render();
+
+  if (!db) {
+    ordenes[idx] = {
+      ...ordenes[idx],
+      estado: estadoAnterior
+    };
+    render();
+    alert("No se pudo guardar el estado: la base de datos no está disponible.");
+    return;
+  }
+
+  try {
+    await db.doc("ordenes/" + id).update({
+      estado: nuevo
+    });
+  } catch (e) {
+    // Revertir el cambio si falla el guardado
+    const indiceActual = ordenes.findIndex(x => x.id === id);
+
+    if (indiceActual !== -1) {
+      ordenes[indiceActual] = {
+        ...ordenes[indiceActual],
+        estado: estadoAnterior
+      };
+    }
+
+    render();
+
+    alert(
+      "No se pudo guardar el estado. Se restauró el estado anterior: " +
+      (e && e.code ? e.code : e && e.message ? e.message : e)
+    );
+  }
+}
+
+
+async function borrar(id) {
+  if (!confirm("¿Estás seguro de que deseas eliminar esta orden?")) return;
+  ordenes = ordenes.filter(o => o.id !== id);
+  if (db) { try { await db.doc("ordenes/" + id).delete(); } catch(e) {} }
+  render();
+}
+
+function renderFotosRow() {
+  const row = document.getElementById("fotosRow");
+  const addBtn = `<button type="button" class="foto-add" id="fotoAddBtn" title="Tomar foto">📷</button><button type="button" class="foto-add" id="archivoAddBtn" title="Elegir archivo">📁</button>`;
+  row.innerHTML = fotosActuales.map((f, i) => `
+    <div class="foto-thumb"><img src="${f.url}"><button type="button" class="rm" data-i="${i}">✕</button></div>
+  `).join("") + addBtn;
+  row.querySelectorAll(".rm").forEach(btn => {
+    btn.onclick = () => { fotosActuales.splice(Number(btn.dataset.i), 1); renderFotosRow(); };
+  });
+  document.getElementById("fotoAddBtn").onclick = () => document.getElementById("f-foto-input").click();
+  document.getElementById("archivoAddBtn").onclick = () => document.getElementById("f-archivo-input").click();
+}
+
+async function fileADataUrl(file, maxDim, quality) {
+  maxDim = maxDim || 1100;
+  quality = quality || 0.72;
+
+  try {
+    // Detectar y convertir HEIC/HEIF
+    if (
+      typeof HeicTo !== "undefined" &&
+      await HeicTo.isHeic(file)
+    ) {
+      console.log("Imagen HEIC/HEIF detectada. Convirtiendo a JPEG...");
+
+      file = await HeicTo({
+        blob: file,
+        type: "image/jpeg",
+        quality: quality
+      });
+
+      console.log("HEIC convertido correctamente a JPEG.");
+    }
+
+    // Procesamiento normal de la imagen
+    return await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const img = new Image();
+
+        img.onload = () => {
+          let w = img.width;
+          let h = img.height;
+
+          if (w > maxDim || h > maxDim) {
+            const s = maxDim / Math.max(w, h);
+            w = Math.round(w * s);
+            h = Math.round(h * s);
+          }
+
+          const canvas = document.createElement("canvas");
+          canvas.width = w;
+          canvas.height = h;
+
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, w, h);
+
+          try {
+            resolve(canvas.toDataURL("image/jpeg", quality));
+          } catch (e) {
+            reject(e);
+          }
+        };
+
+        img.onerror = reject;
+        img.src = reader.result;
+      };
+
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+  } catch (error) {
+    console.error("Error procesando imagen:", error);
+    throw error;
+  }
+}
+async function subirFotos(e) {
+  const files = Array.from(e.target.files || []);
+  if (!files.length) return;
+  document.querySelectorAll(".foto-add").forEach(b => b.classList.add("busy"));
+  for (const file of files) {
+    try {
+      const dataUrl = await fileADataUrl(file);
+      fotosActuales.push({ id: "f" + Date.now() + Math.random().toString(36).slice(2, 6), url: dataUrl });
+    } catch (err) {
+      alert("No se pudo procesar una foto. Intenta de nuevo.");
+    }
+  }
+  renderFotosRow();
+}
+
+function renderCatSelect() {
+  const sel = document.getElementById("matSelect");
+  if (!sel) return;
+  const actual = sel.value;
+  sel.innerHTML = '<option value="">Selecciona un material…</option>' +
+    catalogo.map(m => `<option value="${m.id}">${escapeHtml(m.nombre)} (${fmtQ(m.precio)}/${escapeHtml(m.unidad || "u")})</option>`).join("");
+  sel.value = actual;
+}
+
+function renderCatList() {
+  const el = document.getElementById("catList");
+
+  if (!el) return;
+
+  if (!catalogo.length) {
+    el.innerHTML =
+      '<div class="empty" style="padding:16px 0;">Aún no hay materiales. Agrega el primero arriba.</div>';
+
+    return;
+  }
+
+  el.innerHTML = catalogo.map(m => `
+    <div class="cat-row" data-id="${m.id}">
+
+      <div>
+        <strong>${escapeHtml(m.nombre)}</strong>
+
+        <div style="
+          color:var(--text-dim);
+          font-size:12.5px;
+        ">
+          ${fmtQ(m.precio)} /
+          ${escapeHtml(m.unidad || "unidad")}
+        </div>
+      </div>
+
+      <div style="
+        display:flex;
+        gap:6px;
+      ">
+        <button
+          type="button"
+          class="btn-sm cat-edit"
+        >
+          Editar
+        </button>
+
+        <button
+          type="button"
+          class="btn-sm danger cat-del"
+        >
+          Eliminar
+        </button>
+      </div>
+
+    </div>
+  `).join("");
+
+  // EDITAR MATERIAL
+  el.querySelectorAll(".cat-edit").forEach(btn => {
+
+    btn.onclick = () => {
+
+      const id =
+        btn.closest(".cat-row").dataset.id;
+
+      const m =
+        catalogo.find(x => x.id === id);
+
+      if (!m) return;
+
+      catEditId = id;
+
+      document.getElementById("cat-nombre").value =
+        m.nombre;
+
+      document.getElementById("cat-unidad").value =
+        m.unidad || "";
+
+      document.getElementById("cat-precio").value =
+        m.precio;
+
+      document.getElementById("btnCatSave").textContent =
+        "Guardar cambios";
+    };
+
+  });
+
+  // ELIMINAR MATERIAL
+  el.querySelectorAll(".cat-del").forEach(btn => {
+
+    btn.onclick = async () => {
+
+      const id =
+        btn.closest(".cat-row").dataset.id;
+
+      const material =
+        catalogo.find(x => x.id === id);
+
+      if (!material) return;
+
+      const confirmar = confirm(
+        '¿Deseas eliminar el material "' +
+        material.nombre +
+        '"?'
+      );
+
+      if (!confirmar) return;
+
+      // Guardamos el catálogo actual por si la eliminación falla
+      const catalogoAnterior = [...catalogo];
+
+      // Eliminación visual inmediata
+      catalogo = catalogo.filter(
+        x => x.id !== id
+      );
+
+      renderCatList();
+      renderCatSelect();
+
+      if (db) {
+
+        try {
+
+          await db
+            .doc("materiales/" + id)
+            .delete();
+
+        } catch (e) {
+
+          // Restaurar el material si la eliminación falló
+          catalogo = catalogoAnterior;
+
+          renderCatList();
+          renderCatSelect();
+
+          alert(
+            "No se pudo eliminar el material. " +
+            "El registro fue restaurado."
+          );
+
+          console.error(
+            "Error eliminando material:",
+            e
+          );
+        }
+
+      }
+
+    };
+
+  });
+
+}
+
+function limpiarFormCatalogo() {
+  catEditId = null;
+  document.getElementById("cat-nombre").value = "";
+  document.getElementById("cat-unidad").value = "";
+  document.getElementById("cat-precio").value = "";
+  document.getElementById("btnCatSave").textContent = "Agregar material";
+}
+
+function abrirCatalogo() {
+  limpiarFormCatalogo();
+  renderCatList();
+  document.getElementById("catOverlay").classList.add("open");
+}
+function cerrarCatalogo() { document.getElementById("catOverlay").classList.remove("open"); }
+
+async function guardarMaterialCatalogo() {
+  const nombre = document.getElementById("cat-nombre").value.trim();
+  if (!nombre) { document.getElementById("cat-nombre").focus(); return; }
+  const precio = Number(document.getElementById("cat-precio").value) || 0;
+  const unidad = document.getElementById("cat-unidad").value.trim() || "unidad";
+  if (catEditId) {
+    const idx = catalogo.findIndex(x => x.id === catEditId);
+    if (idx > -1) catalogo[idx] = { ...catalogo[idx], nombre, precio, unidad };
+    if (db) {
+      try { await db.doc("materiales/" + catEditId).update({ nombre, precio, unidad }); }
+      catch (e) { alert("No se pudo guardar el material en el servidor: " + (e && e.code ? e.code : e)); }
+    }
+  } else {
+    const id = "mat" + Date.now();
+    catalogo.push({ id, nombre, precio, unidad });
+    if (db) {
+      try { await db.doc("materiales/" + id).set({ id, nombre, precio, unidad }); }
+      catch (e) { alert("No se pudo guardar el material en el servidor: " + (e && e.code ? e.code : e)); }
+    }
+  }
+  limpiarFormCatalogo();
+  renderCatList(); renderCatSelect();
+}
+function editarCliente(id) {
+  const cliente = clientes.find(c => c.id === id);
+  if (!cliente) return;
+
+  editClienteId = id;
+
+  document.getElementById("cli-nombre").value = cliente.nombre || "";
+  document.getElementById("cli-nit").value = cliente.nit || "";
+  document.getElementById("cli-telefono").value = cliente.telefono || "";
+  document.getElementById("cli-direccion").value = cliente.direccion || "";
+  document.getElementById("cli-notas").value = cliente.notas || "";
+
+  const btn = document.getElementById("btnCliSave");
+  if (btn) btn.textContent = "Actualizar cliente";
+
+  document.getElementById("cli-nombre").focus();
+  const btnCancelar = document.getElementById("btnCliCancelEdit");
+if (btnCancelar) btnCancelar.style.display = "block";
+}
+function cancelarEdicionCliente() {
+  editClienteId = null;
+
+  document.getElementById("cli-nombre").value = "";
+  document.getElementById("cli-nit").value = "";
+  document.getElementById("cli-telefono").value = "";
+  document.getElementById("cli-direccion").value = "";
+  document.getElementById("cli-notas").value = "";
+
+  const btn = document.getElementById("btnCliSave");
+  if (btn) btn.textContent = "Agregar cliente";
+
+  const btnCancelar = document.getElementById("btnCliCancelEdit");
+  if (btnCancelar) btnCancelar.style.display = "none";
+
+  document.getElementById("cli-nombre").focus();
+}
+async function eliminarCliente(clienteId) {
+  const cliente = clientes.find(c => c.id === clienteId);
+  if (!cliente) return;
+
+  const totalOrdenes = ordenes.filter(o =>
+    (o.cliente || "").trim().toLowerCase() ===
+    (cliente.nombre || "").trim().toLowerCase()
+  ).length;
+
+  const mensaje = totalOrdenes
+    ? `¿Eliminar la ficha de "${cliente.nombre}"?\n\nEste cliente tiene ${totalOrdenes} orden(es) registrada(s).\n\nLas órdenes NO se eliminarán; solo se eliminará la ficha del cliente.`
+    : `¿Eliminar la ficha de "${cliente.nombre}"?`;
+
+  if (!confirm(mensaje)) return;
+
+  if (db) {
+    try {
+      await db.doc("clientes/" + clienteId).delete();
+    } catch (e) {
+      alert(
+        "No se pudo eliminar el cliente: " +
+        (e && e.message ? e.message : e)
+      );
+      return;
+    }
+  } else {
+    clientes = clientes.filter(c => c.id !== clienteId);
+    renderClientesList();
+    renderClientesSelect();
+  }
+
+  editClienteId = null;
+
+  renderClientesList();
+  renderClientesSelect();
+}
+async function guardarCliente() {
+  const nombre = document.getElementById("cli-nombre").value.trim();
+
+  if (!nombre) {
+    document.getElementById("cli-nombre").focus();
+    return;
+  }
+
+  const datos = {
+    nombre,
+    nit: document.getElementById("cli-nit").value.trim(),
+    telefono: document.getElementById("cli-telefono").value.trim(),
+    direccion: document.getElementById("cli-direccion").value.trim(),
+    notas: document.getElementById("cli-notas").value.trim()
+  };
+
+  // EDITAR CLIENTE EXISTENTE
+  if (editClienteId) {
+    const idx = clientes.findIndex(c => c.id === editClienteId);
+
+    if (idx > -1) {
+      const clienteActualizado = {
+        ...clientes[idx],
+        ...datos
+      };
+
+      clientes[idx] = clienteActualizado;
+
+      if (db) {
+        try {
+          await db.doc("clientes/" + editClienteId).update(datos);
+        } catch (e) {
+          alert("No se pudo actualizar el cliente: " + (e && e.code ? e.code : e));
+          return;
+        }
+      }
+    }
+
+  // NUEVO CLIENTE
+  } else {
+    const cliente = {
+      id: "cli" + Date.now(),
+      ...datos
+    };
+
+    clientes.push(cliente);
+
+    if (db) {
+      try {
+        await db.doc("clientes/" + cliente.id).set(cliente);
+      } catch (e) {
+        alert("No se pudo guardar el cliente: " + (e && e.code ? e.code : e));
+        return;
+      }
+    }
+  }
+
+  // Limpiar formulario
+  document.getElementById("cli-nombre").value = "";
+  document.getElementById("cli-nit").value = "";
+  document.getElementById("cli-telefono").value = "";
+  document.getElementById("cli-direccion").value = "";
+  document.getElementById("cli-notas").value = "";
+
+  // Volver al modo "Agregar cliente"
+  editClienteId = null;
+
+  const btn = document.getElementById("btnCliSave");
+  if (btn) btn.textContent = "Agregar cliente";
+
+  renderClientesList();
+}
+function renderClientesSelect() {
+  const sel = document.getElementById("f-cliente");
+  if (!sel) return;
+
+  const actual = sel.value;
+
+  sel.innerHTML = '<option value="">Seleccionar cliente...</option>' +
+    clientes.map(c =>
+      `<option value="${escapeHtml(c.id)}">${escapeHtml(c.nombre)}</option>`
+    ).join("");
+
+  if (clientes.some(c => c.id === actual)) {
+    sel.value = actual;
+  }
+}
+function abrirFichaCliente(clienteId) {
+  const cliente = clientes.find(c => c.id === clienteId);
+  if (!cliente) return;
+
+  const nombreCliente = (cliente.nombre || "").trim().toLowerCase();
+
+  const ordenesCliente = ordenes
+    .filter(o =>
+      (o.cliente || "").trim().toLowerCase() === nombreCliente
+    )
+    .sort((a, b) =>
+      new Date(b.fechaIngreso) - new Date(a.fechaIngreso)
+    );
+
+  const contenido = document.getElementById("clienteFichaContenido");
+
+  contenido.innerHTML = `
+    <div style="margin-bottom:16px;">
+      <div style="font-size:20px; font-weight:700;">
+        ${escapeHtml(cliente.nombre || "")}
+      </div>
+
+      <div style="color:var(--text-dim); font-size:13px; margin-top:6px;">
+        ${cliente.nit
+          ? "NIT: " + escapeHtml(cliente.nit)
+          : "Sin NIT"}
+        ${cliente.telefono
+          ? " · Tel: " + escapeHtml(cliente.telefono)
+          : ""}
+      </div>
+    </div>
+
+    <div class="cat-row" style="display:block; margin-bottom:12px;">
+      <div style="font-size:13px;">
+        <strong>Dirección</strong>
+      </div>
+      <div style="color:var(--text-dim); font-size:13px; margin-top:4px;">
+        ${escapeHtml(cliente.direccion || "Sin dirección registrada")}
+      </div>
+    </div>
+
+    <div class="cat-row" style="display:block; margin-bottom:12px;">
+      <div style="font-size:13px;">
+        <strong>Notas</strong>
+      </div>
+      <div style="color:var(--text-dim); font-size:13px; margin-top:4px;">
+        ${escapeHtml(cliente.notas || "Sin notas")}
+      </div>
+    </div>
+
+    <div style="
+      margin:16px 0 10px;
+      font-size:15px;
+      font-weight:700;
+    ">
+      Historial de órdenes (${ordenesCliente.length})
+    </div>
+
+    ${
+      ordenesCliente.length
+       ? ordenesCliente.map(o => `
+  <div
+      class="cat-row"
+    style="
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    "
+  >
+    <div style="min-width:0;">
+      <strong>ORD-${ordenNumero(o.id)}</strong>
+
+      <div style="
+        color:var(--text-dim);
+        font-size:12.5px;
+        margin-top:3px;
+      ">
+        ${fmtFecha(o.fechaIngreso)}
+· ${escapeHtml(obtenerResumenEquipo(o))}
+      </div>
+
+      <div style="
+        color:var(--text-dim);
+        font-size:12.5px;
+        margin-top:3px;
+      ">
+        Estado:
+        <strong>${escapeHtml(o.estado || "Sin estado")}</strong>
+      </div>
+    </div>
+
+    <div style="
+      font-weight:700;
+      white-space:nowrap;
+      text-align:right;
+    ">
+      ${fmtQ(o.total)}
+      <div style="
+        color:var(--text-dim);
+        font-size:11px;
+        font-weight:400;
+        margin-top:3px;
+      ">
+ <button
+  type="button"
+  style="
+    border:0;
+    background:none;
+    padding:0;
+    color:var(--text-dim);
+    font-size:11px;
+    cursor:pointer;
+  "
+  onclick="
+    event.stopPropagation();
+    document.getElementById('clienteFichaOverlay').classList.remove('open');
+    abrirFichaOrden('${o.id}');
+  "
+>
+  Ver orden →
+</button>
+      </div>
+    </div>
+  </div>
+`).join("")
+:
+`
+  <div class="empty" style="padding:16px 0;">
+    Este cliente aún no tiene órdenes registradas.
+  </div>
+`
+
+}
+`
+;
+
+ document
+  .getElementById("clientesOverlay")
+  .classList.remove("open");
+  document
+    .getElementById("clienteFichaOverlay")
+    .classList.add("open");
+}
+function obtenerPerfilDeOrden(orden) {
+  // 1. Las órdenes nuevas ya tienen el perfil guardado
+  if (orden?.perfilTaller && PERFILES_TALLER[orden.perfilTaller]) {
+    return PERFILES_TALLER[orden.perfilTaller];
+  }
+
+  // 2. Detectar órdenes antiguas de motores eléctricos
+  //    creadas antes de guardar perfilTaller
+  const camposMotor = [
+    "tipo",
+    "potencia",
+    "unidadPotencia",
+    "voltaje",
+    "frecuencia",
+    "fases",
+    "corriente",
+    "factorPotencia",
+    "rpm",
+    "claseAislamiento",
+    "gradoProteccion"
+  ];
+
+  const esMotor = camposMotor.some(campo =>
+  orden &&
+  Object.prototype.hasOwnProperty.call(orden, campo)
+);
+
+  if (esMotor) {
+    return PERFILES_TALLER["motores-electricos"];
+  }
+
+  // 3. Detectar órdenes antiguas de automotriz
+  const camposAutomotriz = [
+    "tipoVehiculo",
+    "placa",
+    "kilometraje",
+    "cilindraje",
+    "combustible",
+    "transmision"
+  ];
+
+  const esAutomotriz = camposAutomotriz.some(campo =>
+  orden &&
+  Object.prototype.hasOwnProperty.call(orden, campo)
+);
+  if (esAutomotriz) {
+    return PERFILES_TALLER["automotriz"];
+  }
+
+  // 4. Las órdenes antiguas fueron creadas originalmente
+//    cuando el sistema trabajaba únicamente con motores eléctricos.
+//    Por seguridad, si no tienen perfilTaller, se consideran motores.
+return PERFILES_TALLER["motores-electricos"];
+}
+function abrirFichaOrden(id) {
+  const orden = ordenes.find(o => o.id === id);
+  if (!orden) return;
+
+  const contenido = document.getElementById("ordenFichaContenido");
+  if (!contenido) return;
+const perfilOrden = obtenerPerfilDeOrden(orden);
+
+const camposTecnicosHtml = perfilOrden.campos
+  .map(campo => {
+    const valor = orden[campo.id];
+
+    if (valor === undefined || valor === null || valor === "") {
+      return "";
+    }
+
+   
+const esMedidaHerreria =
+  perfilOrden.id === "herreria" &&
+  ["espesor", "largo", "ancho", "alto"].includes(campo.id);
+
+const valorFormateado =
+  campo.id === "kilometraje"
+    ? Number(String(valor).replace(/[,.]/g, "")).toLocaleString("en-US", {
+        maximumFractionDigits: 0,
+        useGrouping: true
+      })
+    : esMedidaHerreria
+      ? String(valor).replace(".", ",")
+      : String(valor);
+
+return `
+  <div class="cat-row">
+    <strong>${escapeHtml(campo.nombre)}</strong>
+    <div>${escapeHtml(valorFormateado)}</div>
+  </div>
+`;
+
+  })
+  .join("");
+  const materialesHtml =
+    orden.materialesItems && orden.materialesItems.length
+      ? orden.materialesItems.map(item => `
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            gap:10px;
+            padding:6px 0;
+            border-bottom:1px solid var(--border);
+            font-size:13px;
+          ">
+            <span>
+              ${escapeHtml(item.nombre || item.material || "Material")}
+              ${item.cantidad ? ` × ${escapeHtml(item.cantidad)}` : ""}
+            </span>
+            <strong>${fmtQ(item.subtotal || 0)}</strong>
+          </div>
+        `).join("")
+      : `<div style="color:var(--text-dim); font-size:13px;">Sin materiales registrados</div>`;
+
+  const fotosHtml =
+    orden.fotos && orden.fotos.length
+      ? `
+        <div style="margin-top:14px;">
+          <strong>Fotos adjuntas</strong>
+          <div style="
+            display:flex;
+            flex-wrap:wrap;
+            gap:8px;
+            margin-top:8px;
+          ">
+            ${orden.fotos.map(f => `
+              <img
+                src="${f.url}"
+                alt="Foto de la orden"
+                style="
+                  width:90px;
+                  height:90px;
+                  object-fit:cover;
+                  border-radius:8px;
+                  border:1px solid var(--border);
+                "
+              >
+            `).join("")}
+          </div>
+        </div>
+      `
+      : "";
+
+  contenido.innerHTML = `
+    <div style="margin-bottom:16px;">
+      <div style="font-size:22px; font-weight:700;">
+        ORD-${ordenNumero(orden.id)}
+      </div>
+
+      <div style="
+        color:var(--text-dim);
+        font-size:13px;
+        margin-top:4px;
+      ">
+        Ingreso: ${fmtFecha(orden.fechaIngreso || orden.fecha)}
+      </div>
+    </div>
+
+    <div class="cat-row">
+      <strong>Cliente</strong>
+      <div>${escapeHtml(orden.cliente || "Sin cliente")}</div>
+    </div>
+
+    <div class="cat-row">
+      <strong>NIT</strong>
+      <div>${escapeHtml(orden.nit || "Sin NIT")}</div>
+    </div>
+
+    <div class="cat-row">
+      <strong>Teléfono</strong>
+      <div>${escapeHtml(orden.telefono || "Sin teléfono")}</div>
+    </div>
+
+   <div style="
+  margin:16px 0 10px;
+  font-size:16px;
+  font-weight:700;
+">
+  ${escapeHtml(perfilOrden.nombre)}
+</div>
+
+${camposTecnicosHtml}
+  
+
+    
+
+    <div style="
+      margin:16px 0 10px;
+      font-size:16px;
+      font-weight:700;
+    ">
+      Presupuesto
+    </div>
+
+    <div class="cat-row">
+      <strong>Materiales</strong>
+      <div>${fmtQ(orden.materiales || 0)}</div>
+    </div>
+
+    <div style="
+      margin-top:8px;
+      padding:8px 0;
+    ">
+      ${materialesHtml}
+    </div>
+
+    <div class="cat-row">
+      <strong>Mano de obra</strong>
+      <div>
+        ${(orden.horas || 0)} h × ${fmtQ(orden.tarifa || 0)}/h =
+        ${fmtQ((orden.horas || 0) * (orden.tarifa || 0))}
+      </div>
+    </div>
+
+    <div class="cat-row">
+      <strong>Margen / adicional</strong>
+      <div>${fmtQ(orden.margen || 0)}</div>
+    </div>
+
+    <div class="cat-row" style="
+      margin-top:8px;
+      font-size:16px;
+      font-weight:700;
+    ">
+      <strong>Total presupuesto</strong>
+      <div>${fmtQ(orden.total || 0)}</div>
+    </div>
+
+    <div class="cat-row" style="
+  margin-top:4px;
+  font-size:16px;
+  font-weight:700;
+">
+  <strong>Facturación final</strong>
+  <div>${fmtQ(orden.facturacionFinal ?? 0)}</div>
+</div>
+
+    <div style="
+      margin:16px 0 10px;
+      font-size:16px;
+      font-weight:700;
+    ">
+      Estado
+    </div>
+
+    <div class="cat-row">
+      <strong>Estado de la orden</strong>
+      <div>${escapeHtml(orden.estado || "Recibido")}</div>
+    </div>
+
+    <div class="cat-row" style="display:block; margin-top:12px;">
+      <strong>Notas</strong>
+      <div style="
+        color:var(--text-dim);
+        margin-top:5px;
+        white-space:pre-wrap;
+      ">
+        ${escapeHtml(orden.notas || "Sin notas")}
+      </div>
+    </div>
+
+    ${fotosHtml}
+  `;
+
+  document
+    .getElementById("ordenFichaOverlay")
+    .classList.add("open");
+    // BOTONES DE LA FICHA DE LA ORDEN
+document.getElementById("btnOrdenEditar").onclick = () => {
+  document
+    .getElementById("ordenFichaOverlay")
+    .classList.remove("open");
+
+  abrirSheetEditar(id);
+};
+
+document.getElementById("btnOrdenPDF").onclick = () => {
+  exportarPDF(
+    id,
+    document.getElementById("btnOrdenPDF")
+  );
+};
+
+document.getElementById("btnOrdenEliminar").onclick = () => {
+  borrar(id);
+};
+
+document.getElementById("btnOrdenCerrar").onclick = () => {
+  document
+    .getElementById("ordenFichaOverlay")
+    .classList.remove("open");
+};
+}
+function renderClientesList() {
+  const el = document.getElementById("clientesList");
+  if (!el) return;
+
+  if (!clientes.length) {
+    el.innerHTML = '<div class="empty" style="padding:16px 0;">Aún no hay clientes registrados.</div>';
+    return;
+  }
+
+  el.innerHTML = clientes.map(c => {
+    const totalOrdenes = ordenes.filter(o =>
+      (o.cliente || "").trim().toLowerCase() ===
+      (c.nombre || "").trim().toLowerCase()
+    ).length;
+
+    return `
+    <div class="cat-row" data-cliente-id="${escapeHtml(c.id)}" style="cursor:pointer;">
+        <div>
+          <strong>${escapeHtml(c.nombre)}</strong>
+
+          <div style="color:var(--text-dim); font-size:12.5px;">
+            ${c.nit ? "NIT: " + escapeHtml(c.nit) : "Sin NIT"}
+            ${c.telefono ? " · Tel: " + escapeHtml(c.telefono) : ""}
+          </div>
+
+          <div style="color:var(--text-dim); font-size:12.5px; margin-top:3px;">
+            Órdenes: <strong>${totalOrdenes}</strong>
+          </div>
+        </div>
+
+       <button
+  type="button"
+  class="btn-sm btn-primary btn-ficha-cliente"
+  data-id="${escapeHtml(c.id)}">
+  Abrir ficha
+</button>
+
+        <button
+          type="button"
+          class="btn-sm btn-edit btn-edit-cliente"
+          data-id="${escapeHtml(c.id)}">
+          Editar
+        </button>
+        <button
+  type="button"
+  class="btn-sm danger btn-del-cliente"
+  data-id="${escapeHtml(c.id)}">
+  Eliminar
+</button>
+      </div>
+    `;
+  }).join("");
+
+  el.querySelectorAll(".btn-edit-cliente").forEach(btn => {
+    btn.onclick = () => editarCliente(btn.dataset.id);
+  });
+  el.querySelectorAll(".btn-ficha-cliente").forEach(btn => {
+  btn.onclick = () => abrirFichaCliente(btn.dataset.id);
+});
+  el.querySelectorAll(".btn-del-cliente").forEach(btn => {
+  btn.onclick = () => eliminarCliente(btn.dataset.id);
+});
+}
+function renderItemsMateriales() {
+  const el = document.getElementById("itemsMateriales");
+  if (!el) return;
+  if (!itemsActuales.length) {
+    el.innerHTML = '<div style="color:var(--text-dim); font-size:12.5px;">Aún no has agregado materiales a este motor.</div>';
+  } else {
+    el.innerHTML = itemsActuales.map((it, i) => `
+      <div class="mat-row">
+        <span class="mline">
+  ${escapeHtml(it.nombre)} ·
+  <input type="number" class="mat-cantidad" data-i="${i}" value="${it.cantidad}" min="0.01" step="0.01">
+  ${escapeHtml(it.unidad || "")} × ${fmtQ(it.precio)}
+</span>
+        <span class="mright"><strong>${fmtQ(it.subtotal)}</strong><button type="button" class="chip-rm" data-i="${i}">✕</button></span>
+      </div>
+    `).join("");
+    el.querySelectorAll(".chip-rm").forEach(btn => {
+    btn.onclick = () => {
+  itemsActuales.splice(Number(btn.dataset.i), 1);
+  renderItemsMateriales();
+  actualizarTotalPresupuesto();
+};  
+    });
+    el.querySelectorAll(".mat-cantidad").forEach(input => {
+  input.onchange = () => {
+    const i = Number(input.dataset.i);
+    const cantidad = Number(input.value);
+
+    if (!cantidad || cantidad <= 0) {
+      input.value = itemsActuales[i].cantidad;
+      return;
+    }
+
+    itemsActuales[i].cantidad = cantidad;
+    itemsActuales[i].subtotal = cantidad * itemsActuales[i].precio;
+    renderItemsMateriales();
+  };
+});
+  }
+  document.getElementById("matTotalLabel").textContent = fmtQ(materialesTotal());
+}
+
+function materialesTotal() {
+  return itemsActuales.reduce((s, it) => s + it.subtotal, 0);
+}
+function manoObraTotal() {
+  const horas = Number(document.getElementById("f-horas").value) || 0;
+  const tarifa = Number(document.getElementById("f-tarifa").value) || 0;
+  return Math.round(horas * tarifa * 100) / 100;
+}
+function actualizarManoObra() {
+  const el = document.getElementById("manoObraLabel");
+  if (el) el.textContent = fmtQ(manoObraTotal());
+}
+function actualizarTotalPresupuesto() {
+  const materiales = materialesTotal();
+  const manoObra = manoObraTotal();
+  const margen = Number(document.getElementById("f-margen").value) || 0;
+
+  const total = Math.round((materiales + manoObra + margen) * 100) / 100;
+
+document.getElementById("f-total").value = String(total);
+}
+function agregarItemMaterial() {
+  const sel = document.getElementById("matSelect");
+  const matId = sel.value;
+  const cantidad = Number(document.getElementById("matCantidad").value) || 0;
+  if (!matId || cantidad <= 0) return;
+  const m = catalogo.find(x => x.id === matId);
+  if (!m) return;
+  itemsActuales.push({
+    id: "it" + Date.now(), materialId: m.id, nombre: m.nombre, unidad: m.unidad,
+    precio: m.precio, cantidad, subtotal: Math.round(m.precio * cantidad * 100) / 100
+  });
+  sel.value = "";
+  document.getElementById("matCantidad").value = "";
+  renderItemsMateriales();
+  actualizarTotalPresupuesto();
+}
+function obtenerPerfilTallerActual() {
+  const perfilId =
+    localStorage.getItem("perfilTaller") ||
+    "motores-electricos";
+
+  return PERFILES_TALLER[perfilId] || null;
+}
+
+function obtenerValoresCamposTecnicos(orden = null) {
+  const perfil = orden
+    ? obtenerPerfilDeOrden(orden)
+    : obtenerPerfilTallerActual();
+
+  const valores = {};
+
+  if (!perfil || !perfil.campos) return valores;
+
+  perfil.campos.forEach(campo => {
+    const el = document.getElementById("f-" + campo.id);
+    if (!el) return;
+
+    valores[campo.id] =
+      campo.tipo === "number"
+        ? el.value.trim()
+        : el.value;
+  });
+
+  return valores;
+}
+
+function cargarValoresCamposTecnicos(orden) {
+const perfil = obtenerPerfilDeOrden(orden);
+  if (!perfil || !perfil.campos) return;
+
+  perfil.campos.forEach(campo => {
+    const el = document.getElementById("f-" + campo.id);
+    if (!el) return;
+
+    const valor = orden[campo.id];
+
+    
+if (valor === undefined || valor === null) {
+  el.value = "";
+} else {
+  const camposMedida = [
+    "espesor",
+    "largo",
+    "ancho",
+    "alto"
+  ];
+
+  
+if (camposMedida.includes(campo.id)) {
+  el.value = String(valor).replace(",", ".");
+} else {
+  el.value = valor;
+}
+
+}
+
+  });
+}
+
+function abrirSheet() {
+
+  // NUEVO INGRESO: limpiar completamente el estado anterior
+  editId = null;
+  itemsActuales = [];
+  fotosActuales = [];
+
+  // Restablecer título
+  document.getElementById("sheetTitle").textContent = "Nuevo ingreso";
+
+  // Limpiar campos del formulario
+ [
+  "cliente",
+  "telefono",
+  "nit",
+  "potencia",
+  "unidad-potencia",
+  "voltaje",
+  "marca",
+  "modelo",
+  "numero-serie",
+  "frecuencia",
+  "fases",
+  "corriente",
+  "factor-potencia",
+  "rpm",
+  "clase-aislamiento",
+  "grado-proteccion",
+  "falla",
+  "notas"
+].forEach(k => {
+  const el = document.getElementById("f-" + k);
+  if (el) el.value = "";
+});
+// Generar campos técnicos según el perfil seleccionado
+renderCamposTecnicos();
+
+
+// Campos numéricos: todo nuevo ingreso inicia en cero
+const campoHoras = document.getElementById("f-horas");
+const campoTarifa = document.getElementById("f-tarifa");
+const campoMargen = document.getElementById("f-margen");
+const campoTotal = document.getElementById("f-total");
+const campoFacturacionFinal = document.getElementById("f-facturacion-final");
+
+
+if (campoHoras) campoHoras.value = 0;
+if (campoTarifa) campoTarifa.value = 0;
+if (campoMargen) campoMargen.value = 0;
+if (campoTotal) campoTotal.value = 0;
+if (campoFacturacionFinal) campoFacturacionFinal.value = 0;
+
+// Recalcular indicadores desde cero
+actualizarManoObra();
+actualizarTotalPresupuesto();
+
+ 
+
+  // Restablecer elementos visuales
+  renderFotosRow();
+  renderCatSelect();
+  renderItemsMateriales();
+
+  // Abrir formulario
+  document.getElementById("overlay").classList.add("open");
+}
+
+function abrirSheetEditar(id) {
+  const o = ordenes.find(x => x.id === id);
+  if (!o) return;
+  editId = id;
+  fotosActuales = [...(o.fotos || [])];
+  itemsActuales = [...(o.materialesItems || [])];
+  document.getElementById("sheetTitle").textContent = "Editar ORD-" + ordenNumero(id);
+// Generar campos técnicos según el perfil de esta orden
+const perfilOrden = obtenerPerfilDeOrden(o);
+
+const perfilIdOrden =
+  o.perfilTaller ||
+  Object.keys(PERFILES_TALLER).find(
+    id => PERFILES_TALLER[id] === perfilOrden
+  );
+
+renderCamposTecnicos(perfilIdOrden);
+
+document.getElementById("f-telefono").value = o.telefono || "";
+cargarValoresCamposTecnicos(o);
+// document.getElementById("f-falla").value = o.falla || "";
+  document.getElementById("f-horas").value = o.horas || "";
+document.getElementById("f-tarifa").value =
+  o.tarifa != null ? String(o.tarifa).replace(",", ".") : "";
+document.getElementById("f-margen").value =
+  o.margen != null ? String(o.margen).replace(",", ".") : "";
+document.getElementById("f-total").value =
+  o.total != null ? String(o.total).replace(",", ".") : "";
+document.getElementById("f-facturacion-final").value =
+  o.facturacionFinal != null
+    ? String(o.facturacionFinal).replace(",", ".")
+    : 0;
+actualizarManoObra();
+document.getElementById("f-notas").value = o.notas || "";
+
+renderFotosRow();
+
+renderClientesSelect();
+
+const clienteGuardado = clientes.find(c =>
+  (c.nombre || "").trim().toLowerCase() ===
+  (o.cliente || "").trim().toLowerCase()
+);
+
+document.getElementById("f-cliente").value =
+  clienteGuardado ? clienteGuardado.id : "";
+document.getElementById("f-nit").value =
+  (o.nit || "").trim() ||
+  (clienteGuardado?.nit || "").trim();
+
+renderCatSelect();
+renderItemsMateriales();
+  document.getElementById("overlay").classList.add("open");
+}
+
+function cerrarSheet() { document.getElementById("overlay").classList.remove("open"); }
+
+function siguienteNumeroOrden() {
+  let ultimoNumero = Number(
+    localStorage.getItem("ultimoNumeroOrden")
+  );
+
+  // Si todavía no existe el contador,
+  // inicializarlo usando el número más alto
+  // de las órdenes actuales.
+  if (!Number.isFinite(ultimoNumero) || ultimoNumero < 0) {
+    const numeros = ordenes
+      .map(o => Number(o.numeroOrden))
+      .filter(
+        n => Number.isFinite(n) && n > 0
+      );
+
+    ultimoNumero = numeros.length
+      ? Math.max(...numeros)
+      : 0;
+  }
+
+  const siguiente = ultimoNumero + 1;
+
+  // Guardar inmediatamente el último número utilizado.
+  localStorage.setItem(
+    "ultimoNumeroOrden",
+    String(siguiente)
+  );
+
+  return siguiente;
+}
+function inicializarContadorOrdenes() {
+  const contadorActual = Number(
+    localStorage.getItem("ultimoNumeroOrden")
+  );
+
+  const numeros = ordenes
+    .map(o => Number(o.numeroOrden))
+    .filter(n => Number.isFinite(n) && n > 0);
+
+  const maximoOrdenes = numeros.length
+    ? Math.max(...numeros)
+    : 0;
+
+  const contadorValido =
+    Number.isFinite(contadorActual) && contadorActual > 0
+      ? contadorActual
+      : 0;
+
+  const contadorFinal = Math.max(
+    contadorValido,
+    maximoOrdenes
+  );
+
+  localStorage.setItem(
+    "ultimoNumeroOrden",
+    String(contadorFinal)
+  );
+}
+async function guardar() {
+  try {
+    const clienteId = document.getElementById("f-cliente").value;
+    const clienteObj = clientes.find(c => c.id === clienteId);
+
+    const cliente = clienteObj ? clienteObj.nombre : "";
+
+    if (!cliente) {
+      alert("Ingresa el nombre del cliente antes de guardar.");
+      document.getElementById("f-cliente").focus();
+      return;
+    }
+
+    const ordenExistente = editId
+      ? ordenes.find(x => x.id === editId)
+      : null;
+
+    const perfilParaGuardar = ordenExistente
+      ? (
+          ordenExistente.perfilTaller ||
+          (
+            Object.keys(PERFILES_TALLER).find(
+              id =>
+                PERFILES_TALLER[id] ===
+                obtenerPerfilDeOrden(ordenExistente)
+            )
+          ) ||
+          "motores-electricos"
+        )
+      : (
+          localStorage.getItem("perfilTaller") ||
+          "motores-electricos"
+        );
+
+    const datos = {
+      cliente,
+      telefono: document.getElementById("f-telefono").value.trim(),
+      nit: document.getElementById("f-nit").value.trim(),
+
+      perfilTaller: perfilParaGuardar,
+
+      ...obtenerValoresCamposTecnicos(ordenExistente),
+
+      falla: document.getElementById("f-falla")?.value.trim() || "",
+      materiales: materialesTotal(),
+      materialesItems: itemsActuales,
+
+      horas:
+        Number(document.getElementById("f-horas").value) || 0,
+
+      tarifa:
+        Number(document.getElementById("f-tarifa").value) || 0,
+
+      margen:
+        Number(document.getElementById("f-margen").value) || 0,
+
+      total:
+        Number(document.getElementById("f-total").value) || 0,
+
+     facturacionFinal: (() => {
+  const valor = document
+    .getElementById("f-facturacion-final")
+    .value.trim()
+    .replace(/,/g, "");
+
+  return Number(valor) || 0;
+})(),
+      notas:
+        document.getElementById("f-notas").value.trim(),
+
+      fotos: fotosActuales
+    };
+
+    // EDITAR ORDEN EXISTENTE
+    if (editId) {
+
+      const idx = ordenes.findIndex(x => x.id === editId);
+
+      if (idx > -1) {
+        ordenes[idx] = {
+          ...ordenes[idx],
+          ...datos
+        };
+      }
+
+      cerrarSheet();
+      render();
+
+      if (db) {
+        try {
+          await db
+            .doc("ordenes/" + editId)
+            .update(datos);
+        } catch (e) {
+          alert(
+            "No se pudo guardar en el servidor " +
+            "(se quedó solo en este dispositivo): " +
+            (e && e.code ? e.code : e)
+          );
+        }
+      }
+
+    } else {
+
+      // NUEVA ORDEN
+      const id = "m" + Date.now();
+
+      const nueva = {
+        id,
+        ...datos,
+        numeroOrden: siguienteNumeroOrden(),
+        estado: "Recibido",
+        fechaIngreso: new Date().toISOString()
+      };
+
+      ordenes.push(nueva);
+
+      cerrarSheet();
+      render();
+
+      if (db) {
+        try {
+          await db
+            .doc("ordenes/" + id)
+            .set(nueva);
+        } catch (e) {
+          alert(
+            "No se pudo guardar en el servidor " +
+            "(se quedó solo en este dispositivo): " +
+            (e && e.code ? e.code : e)
+          );
+        }
+      }
+    }
+
+  } catch (err) {
+    alert(
+      "Ocurrió un error al guardar: " +
+      (err && err.message ? err.message : err)
+    );
+  }
+}
+
+function getImgSize(dataUrl) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve({ w: img.naturalWidth || 1, h: img.naturalHeight || 1 });
+    img.onerror = () => resolve({ w: 1, h: 1 });
+    img.src = dataUrl;
+  });
+}
+
+async function exportarPDF(id, btn) {
+  const o = ordenes.find(x => x.id === id);
+  console.log("ORDEN PDF:", o);
+console.log("PERFIL PDF:", o?.perfilTaller);
+  if (!o || !window.jspdf) return;
+  if (btn) btn.classList.add("busy");
+  try {
+   
+const { jsPDF } = window.jspdf;
+const doc = new jsPDF();
+let y = 20;
+
+
+const logoGuardado = localStorage.getItem("logoTaller") || "";
+let logoInsertado = false;
+
+if (logoGuardado) {
+  try {
+    const formatoLogo = logoGuardado.match(
+      /^data:image\/(png|jpeg|webp);base64,/i
+    );
+
+    if (formatoLogo) {
+      const tipoImagen = formatoLogo[1].toLowerCase();
+      const formatoPDF = tipoImagen === "png" ? "PNG" : "JPEG";
+
+      doc.addImage(
+        logoGuardado,
+        formatoPDF,
+        14,
+        12,
+        32,
+        20
+      );
+
+      logoInsertado = true;
+    }
+  } catch (errorLogoPDF) {
+    console.warn("No se pudo insertar el logotipo en el PDF:", errorLogoPDF);
+  }
+}
+
+doc.setFont("helvetica", "bold");
+doc.setFontSize(16);
+
+const tituloPDF = "Orden de trabajo — " + obtenerNombreTaller();
+const anchoTitulo = logoInsertado ? 140 : 182;
+const lineasTitulo = doc.splitTextToSize(tituloPDF, anchoTitulo);
+
+doc.text(lineasTitulo, logoInsertado ? 52 : 14, 18);
+
+y = Math.max(34, 18 + lineasTitulo.length * 7 + 4);
+
+doc.setFontSize(11);
+doc.setFont("helvetica", "normal");
+
+doc.text(
+  "ORD-" + ordenNumero(o.id) +
+  "   ·   Ingreso: " + fmtFecha(o.fechaIngreso) +
+  "   ·   Estado: " + o.estado,
+  14,
+  y
+);
+
+y += 10;
+
+doc.setDrawColor(180);
+doc.line(14, y, 196, y);
+y += 8;
+
+
+
+   
+const campo = (label, valor) => {
+  const margenIzquierdo = 14;
+  const margenDerecho = 196;
+  const anchoPagina = margenDerecho - margenIzquierdo;
+  const anchoEtiqueta = 43;
+  const separacion = 3;
+  const anchoValor = anchoPagina - anchoEtiqueta - separacion;
+  const altoLinea = 6;
+  const margenInferior = 15;
+
+ const textoValor =
+  valor === undefined ||
+  valor === null ||
+  String(valor).trim() === ""
+    ? ""
+    : String(valor).trim();
+
+if (textoValor === "") return;
+
+  doc.setFont("helvetica", "bold");
+
+  const etiquetaLineas = doc.splitTextToSize(
+    String(label),
+    anchoEtiqueta
+  );
+
+  doc.setFont("helvetica", "normal");
+
+  const valorLineas = doc.splitTextToSize(
+    textoValor,
+    anchoValor
+  );
+
+  const altoBloque =
+    Math.max(etiquetaLineas.length, valorLineas.length) *
+    altoLinea;
+
+  if (y + altoBloque > 297 - margenInferior) {
+    doc.addPage();
+    y = 20;
+  }
+
+  doc.setFont("helvetica", "bold");
+  doc.text(etiquetaLineas, margenIzquierdo, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.text(
+    valorLineas,
+    margenIzquierdo + anchoEtiqueta + separacion,
+    y
+  );
+
+  y += altoBloque + 2;
+};
+ 
+    const perfilOrden = obtenerPerfilDeOrden(o);
+    campo("Cliente:", o.cliente);
+    campo("NIT:", o.nit);
+    campo("Teléfono:", o.telefono);
+   id="pdf-dinamico"
+   doc.setFont("helvetica", "bold");
+doc.text("Ficha técnica:", 14, y);
+y += 7;
+
+doc.setFont("helvetica", "normal");
+
+perfilOrden.campos.forEach(campoPerfil => {
+  const valor = o[campoPerfil.id];
+
+  if (valor === undefined || valor === null || valor === "") {
+    return;
+  }
+
+  
+let valorMostrar = String(valor);
+
+
+if (campoPerfil.id === "kilometraje") {
+  const kilometraje = Number(
+    String(valor).replace(/[,.]/g, "")
+  );
+
+  if (Number.isFinite(kilometraje)) {
+    valorMostrar = kilometraje.toLocaleString("en-US", {
+      maximumFractionDigits: 0,
+      useGrouping: true
+    });
+  }
+}
+
+
+const camposMedidaDecimal = [
+  "espesor",
+  "diametro",
+  "longitud",
+  "largo",
+  "ancho",
+  "altura",
+  "alto",
+  "diametroInterior"
+];
+
+// Normalizar las medidas decimales para el PDF
+if (camposMedidaDecimal.includes(campoPerfil.id)) {
+  valorMostrar = valorMostrar.replace(",", ".");
+}
+
+// Agregar unidad de potencia
+if (
+  campoPerfil.id === "potencia" &&
+  o.unidadPotencia
+) {
+  valorMostrar += " " + o.unidadPotencia;
+}
+
+// Agregar unidad de medida
+if (
+  [
+    "espesor",
+    "longitud",
+    "largo",
+    "ancho",
+    "altura",
+    "alto",
+    "diametro",
+    "diametroInterior"
+  ].includes(campoPerfil.id) &&
+  o.unidadMedida
+) {
+  valorMostrar += " " + o.unidadMedida;
+}
+
+  campo(campoPerfil.nombre + ":", valorMostrar);
+});
+
+y += 2;
+doc.line(14, y, 196, y);
+y += 8;
+    
+    if (o.materialesItems && o.materialesItems.length) {
+      doc.setFont("helvetica", "bold"); doc.text("Materiales utilizados:", 14, y); y += 7;
+      doc.setFont("helvetica", "normal"); doc.setFontSize(10);
+      o.materialesItems.forEach(it => {
+        if (y > 275) { doc.addPage(); y = 20; }
+        doc.text(`${it.nombre} — ${it.cantidad} ${it.unidad || ""} × ${fmtQ(it.precio)}`, 16, y);
+        doc.text(fmtQ(it.subtotal), 190, y, { align: "right" });
+        y += 6;
+      });
+      doc.setFontSize(11); y += 3;
+    }
+    if (o.materialesItems && o.materialesItems.length > 0) {
+  campo("Total materiales:", fmtQ(o.materiales));
+}
+
+if (Number(o.horas) > 0 && Number(o.tarifa) > 0) {
+  campo(
+    "Mano de obra:",
+    o.horas + " horas × " + fmtQ(o.tarifa) + "/h = " +
+      fmtQ(o.horas * o.tarifa)
+  );
+}
+
+if (Number(o.margen) !== 0 && Number.isFinite(Number(o.margen))) {
+  campo("Margen / adicional:", fmtQ(o.margen));
+}
+
+
+const dibujarTotal = (etiqueta, valor) => {
+  const margenIzquierdo = 14;
+  const margenDerecho = 196;
+  const anchoEtiqueta = 105;
+  const anchoValor = margenDerecho - margenIzquierdo - anchoEtiqueta;
+  const altoLinea = 7;
+
+  const etiquetaLineas = doc.splitTextToSize(
+    etiqueta,
+    anchoEtiqueta
+  );
+
+  const valorLineas = doc.splitTextToSize(
+    String(valor ?? "—"),
+    anchoValor
+  );
+
+  const altoBloque =
+    Math.max(etiquetaLineas.length, valorLineas.length) *
+    altoLinea;
+
+  if (y + altoBloque > 282) {
+    doc.addPage();
+    y = 20;
+  }
+
+  doc.setFont("helvetica", "bold");
+
+  doc.text(
+    etiquetaLineas,
+    margenIzquierdo,
+    y
+  );
+
+  doc.text(
+    valorLineas,
+    margenIzquierdo + anchoEtiqueta,
+    y
+  );
+
+  y += altoBloque + 2;
+};
+
+if (Number(o.total) > 0) {
+  dibujarTotal("Total presupuesto:", fmtQ(o.total));
+}
+
+if (Number(o.facturacionFinal) > 0) {
+  dibujarTotal("Facturación final:", fmtQ(o.facturacionFinal));
+}
+
+    if (o.notas) { doc.setFont("helvetica", "normal"); doc.text(doc.splitTextToSize("Notas: " + o.notas, 180), 14, y); y += 10; }
+if (o.fotos && o.fotos.length) {
+  y += 4;
+
+  if (y > 250) {
+    doc.addPage();
+    y = 20;
+  }
+
+  doc.setFont("helvetica", "bold");
+  doc.text("Fotos adjuntas:", 14, y);
+  y += 8;
+
+  const maxW = 82;
+  const maxH = 65;
+  const gapX = 10;
+  const gapY = 8;
+  const x1 = 14;
+  const x2 = x1 + maxW + gapX;
+
+  for (let i = 0; i < o.fotos.length; i += 2) {
+
+    const fila = [];
+
+    for (let j = 0; j < 2 && i + j < o.fotos.length; j++) {
+      const foto = o.fotos[i + j];
+      const dim = await getImgSize(foto.url);
+
+      let w = maxW;
+      let h = maxW * dim.h / dim.w;
+
+      if (h > maxH) {
+        h = maxH;
+        w = maxH * dim.w / dim.h;
+      }
+
+      fila.push({
+        foto,
+        w,
+        h,
+        x: j === 0 ? x1 : x2
+      });
+    }
+
+    const altoFila = Math.max(...fila.map(item => item.h));
+
+    if (y + altoFila > 280) {
+      doc.addPage();
+      y = 20;
+
+      doc.setFont("helvetica", "bold");
+      doc.text("Fotos adjuntas:", 14, y);
+      y += 8;
+    }
+
+    for (const item of fila) {
+      try {
+        doc.addImage(
+          item.foto.url,
+          "JPEG",
+          item.x,
+          y,
+          item.w,
+          item.h
+        );
+      } catch (e) {}
+    }
+
+    y += altoFila + gapY;
+  }
+}
+
+    const filename = "ORD-" + ordenNumero(o.id) + "-" + (o.cliente || "motor").replace(/[^a-z0-9]+/gi, "_") + ".pdf";
+    const blob = doc.output("blob");
+
+    if (downloadsCap) {
+      try {
+        await downloadsCap.save({ filename, data: blob });
+      } catch (err) {
+        if (err && err.code !== "declined") alert("No se pudo guardar el PDF (" + (err.code || "error") + ").");
+      }
+    } else {
+      doc.save(filename);
+    }
+  } finally {
+    if (btn) btn.classList.remove("busy");
+  }
+}
+
+function on(id, evento, fn) {
+  const el = document.getElementById(id);
+  if (el) el[evento] = fn;
+}
+
+on("btnNew", "onclick", abrirSheet);
+on("f-foto-input", "onchange", subirFotos);
+on("f-archivo-input", "onchange", subirFotos);
+on("btnCancel", "onclick", cerrarSheet);
+on("btnSave", "onclick", guardar);
+on("btnConfiguracion", "onclick", abrirConfiguracion);
+on("btnCancelarConfiguracion", "onclick", cerrarConfiguracion);
+on("btnGuardarConfiguracion", "onclick", guardarConfiguracion);
+
+on("configColorBotones", "oninput", () => {
+  const selector = document.getElementById("configColorBotones");
+  const vistaPrevia = document.getElementById("vistaPreviaColorBotones");
+
+  if (!selector) return;
+
+  if (vistaPrevia) {
+    vistaPrevia.textContent = selector.value.toUpperCase();
+  }
+});
+
+
+
+on("btnRestaurarColorBotones", "onclick", () => {
+  const colorPredeterminado = "#014BA0";
+  const selector = document.getElementById("configColorBotones");
+  const vistaPrevia = document.getElementById("vistaPreviaColorBotones");
+
+  if (selector) selector.value = colorPredeterminado;
+  if (vistaPrevia) vistaPrevia.textContent = "Azul corporativo";
+});
+
+
+
+
+on("btnQuitarLogoTaller", "onclick", () => {
+  localStorage.removeItem("logoTaller");
+
+  const archivoLogo = document.getElementById("configLogoTaller");
+  const vistaPrevia = document.getElementById("vistaPreviaLogoTaller");
+
+  if (archivoLogo) {
+    archivoLogo.value = "";
+  }
+
+  if (vistaPrevia) {
+    vistaPrevia.removeAttribute("src");
+    vistaPrevia.hidden = true;
+  }
+
+  renderLogoTaller();
+});
+
+
+document.getElementById("configLogoTaller").addEventListener("change", (evento) => {
+  const archivo = evento.target.files[0];
+  const vistaPrevia = document.getElementById("vistaPreviaLogoTaller");
+
+  if (!archivo) return;
+
+  if (!archivo.type.startsWith("image/")) {
+    alert("Selecciona un archivo de imagen válido.");
+    evento.target.value = "";
+    return;
+  }
+
+  if (archivo.size > 5 * 1024 * 1024) {
+    alert("La imagen debe pesar menos de 5 MB.");
+    evento.target.value = "";
+    return;
+  }
+
+  const lector = new FileReader();
+
+  lector.onload = () => {
+    vistaPrevia.src = lector.result;
+    vistaPrevia.hidden = false;
+  };
+
+  lector.onerror = () => {
+    alert("No se pudo leer la imagen seleccionada.");
+  };
+
+  lector.readAsDataURL(archivo);
+});
+
+on("search", "oninput", (e) => { busqueda = e.target.value; render(); });
+on("btnCatalogo", "onclick", abrirCatalogo);
+on("btnClientes", "onclick", () => {
+  renderClientesList();
+  document.getElementById("clientesOverlay").classList.add("open");
+});
+document.getElementById("btnCerrarFichaCliente").onclick = () => {
+  document.getElementById("clienteFichaOverlay").classList.remove("open");
+  document.getElementById("clientesOverlay").classList.add("open");
+};
+document.getElementById("clientesList").onclick = (e) => {
+  const fila = e.target.closest(".cat-row");
+  if (!fila) return;
+
+  // El botón Editar debe seguir funcionando normalmente
+  if (
+  e.target.closest(".btn-edit-cliente") ||
+  e.target.closest(".btn-del-cliente")
+) return;
+
+const clienteId = fila.dataset.clienteId;
+  if (!clienteId) return;
+
+  abrirFichaCliente(clienteId);
+};
+on("btnCatClose", "onclick", cerrarCatalogo);
+on("catOverlay", "onclick", (e) => { if (e.target.id === "catOverlay") cerrarCatalogo(); });
+on("btnCatSave", "onclick", guardarMaterialCatalogo);
+on("btnCliSave", "onclick", guardarCliente);
+on("btnCliCancelEdit", "onclick", cancelarEdicionCliente);
+on("f-cliente", "onchange", () => {
+  const id = document.getElementById("f-cliente").value;
+  const cliente = clientes.find(c => c.id === id);
+
+  document.getElementById("f-telefono").value =
+    cliente ? (cliente.telefono || "") : "";
+
+  document.getElementById("f-nit").value =
+    cliente ? (cliente.nit || "") : "";
+});
+on("btnCliClose", "onclick", () => {
+  cancelarEdicionCliente();
+  document.getElementById("clientesOverlay").classList.remove("open");
+});
+on("btnAddMat", "onclick", agregarItemMaterial);
+on("f-horas", "oninput", () => {
+  actualizarManoObra();
+  actualizarTotalPresupuesto();
+});
+
+on("f-tarifa", "oninput", () => {
+  actualizarManoObra();
+  actualizarTotalPresupuesto();
+});
+
+on("f-margen", "oninput", actualizarTotalPresupuesto);
+
+render();
+cargarColorBotones();
+// BASE DE DATOS LOCAL - IndexedDB
+(async function initDb() {
+  try {
+    async function migrarBaseAnterior() {
+      const DB_ANTERIOR = "taller-rebobinado";
+      const DB_NUEVA = "logitec-industrial";
+      const VERSION = 2;
+
+      if (!indexedDB.databases) {
+        console.warn("El navegador no permite detectar bases IndexedDB.");
+        return;
+      }
+
+      const bases = await indexedDB.databases();
+
+      const existeBaseAnterior = bases.some(
+        db => db.name === DB_ANTERIOR
+      );
+
+      if (!existeBaseAnterior) {
+        return;
+      }
+
+      const dbAnterior = await new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_ANTERIOR);
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+
+      const obtenerDatos = (storeName) => {
+        return new Promise((resolve, reject) => {
+          if (!dbAnterior.objectStoreNames.contains(storeName)) {
+            resolve([]);
+            return;
+          }
+
+          const tx = dbAnterior.transaction(storeName, "readonly");
+          const store = tx.objectStore(storeName);
+          const request = store.getAll();
+
+          request.onsuccess = () => resolve(request.result || []);
+          request.onerror = () => reject(request.error);
+        });
+      };
+
+      const ordenesAnteriores = await obtenerDatos("ordenes");
+      const materialesAnteriores = await obtenerDatos("materiales");
+      const clientesAnteriores = await obtenerDatos("clientes");
+
+      dbAnterior.close();
+
+      const dbNueva = await new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NUEVA, VERSION);
+
+        request.onupgradeneeded = () => {
+          const database = request.result;
+
+          if (!database.objectStoreNames.contains("ordenes")) {
+            database.createObjectStore("ordenes", { keyPath: "id" });
+          }
+
+          if (!database.objectStoreNames.contains("materiales")) {
+            database.createObjectStore("materiales", { keyPath: "id" });
+          }
+
+          if (!database.objectStoreNames.contains("clientes")) {
+            database.createObjectStore("clientes", { keyPath: "id" });
+          }
+        };
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    const contarDatos = (storeName) => {
+      return new Promise((resolve, reject) => {
+        const tx = dbNueva.transaction(storeName, "readonly");
+        const store = tx.objectStore(storeName);
+        const request = store.count();
+
+        request.onsuccess = () => resolve(request.result || 0);
+        request.onerror = () => reject(request.error);
+      });
+    };
+
+    const cantidadesNuevas = await Promise.all([
+      contarDatos("ordenes"),
+      contarDatos("materiales"),
+      contarDatos("clientes")
+    ]);
+
+    const nuevaBaseTieneDatos =
+      cantidadesNuevas[0] > 0 ||
+      cantidadesNuevas[1] > 0 ||
+      cantidadesNuevas[2] > 0;
+
+    if (nuevaBaseTieneDatos) {
+      dbNueva.close();
+      console.log("La base logitec-industrial ya contiene datos. Migración omitida.");
+      return;
+    }
+      const tx = dbNueva.transaction(
+        ["ordenes", "materiales", "clientes"],
+        "readwrite"
+      );
+
+      ordenesAnteriores.forEach(item => {
+        tx.objectStore("ordenes").put(item);
+      });
+
+      materialesAnteriores.forEach(item => {
+        tx.objectStore("materiales").put(item);
+      });
+
+      clientesAnteriores.forEach(item => {
+        tx.objectStore("clientes").put(item);
+      });
+
+      await new Promise((resolve, reject) => {
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+        tx.onabort = () => reject(tx.error);
+      });
+
+      dbNueva.close();
+
+      console.log("Migración completada correctamente.");
+    }
+
+    await migrarBaseAnterior();
+
+  const DB_NAME = "logitec-industrial";
+    const DB_VERSION = 2;
+
+    function abrirBaseLocal() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+        request.onupgradeneeded = () => {
+          const database = request.result;
+
+          if (!database.objectStoreNames.contains("ordenes")) {
+            database.createObjectStore("ordenes", { keyPath: "id" });
+          }
+
+          if (!database.objectStoreNames.contains("materiales")) {
+            database.createObjectStore("materiales", { keyPath: "id" });
+          }
+          if (!database.objectStoreNames.contains("clientes")) {
+  database.createObjectStore("clientes", { keyPath: "id" });
+}
+        };
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+   
+function obtenerTodos(database, storeName) {
+ 
+  return new Promise((resolve, reject) => {
+    const transaction = database.transaction(storeName, "readonly");
+    const store = transaction.objectStore(storeName);
+    const request = store.getAll();
+
+    request.onsuccess = () => resolve(request.result || []);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+    function obtenerUno(database, storeName, id) {
+      return new Promise((resolve, reject) => {
+        const transaction = database.transaction(storeName, "readonly");
+        const store = transaction.objectStore(storeName);
+        const request = store.get(id);
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+   function guardarUno(database, storeName, data) {
+  return new Promise((resolve, reject) => {
+    const transaction = database.transaction(storeName, "readwrite");
+    const store = transaction.objectStore(storeName);
+
+    transaction.oncomplete = () => resolve();
+
+    transaction.onerror = () => {
+      reject(transaction.error || new Error("Error en la transacción"));
+    };
+
+    transaction.onabort = () => {
+      reject(transaction.error || new Error("Transacción cancelada"));
+    };
+
+    const request = store.put(data);
+
+    request.onerror = () => {
+      reject(request.error || new Error("Error guardando el registro"));
+    };
+  });
+}
+
+    function eliminarUno(database, storeName, id) {
+      return new Promise((resolve, reject) => {
+        const transaction = database.transaction(storeName, "readwrite");
+        const store = transaction.objectStore(storeName);
+        const request = store.delete(id);
+
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    const database = await abrirBaseLocal();
+    
+    async function exportarRespaldo() {
+      try {
+        const ordenesRespaldo = await obtenerTodos(database, "ordenes");
+        const materialesRespaldo = await obtenerTodos(database, "materiales");
+        const clientesRespaldo = await obtenerTodos(database, "clientes");
+
+       
+const respaldo = {
+  aplicacion: "mi-app-pwa",
+  versionFormato: 1,
+  fechaExportacion: new Date().toISOString(),
+ 
+configuracion: {
+  nombreTaller: localStorage.getItem("nombreTaller") || "",
+  monedaSimbolo: localStorage.getItem("monedaSimbolo") || "Q",
+  colorBotones: localStorage.getItem("colorBotones") || "#014BA0",
+  logoTaller: localStorage.getItem("logoTaller") || "",
+  perfilTaller: localStorage.getItem("perfilTaller") || "motores-electricos"
+},
+
+  datos: {
+    ordenes: ordenesRespaldo,
+    materiales: materialesRespaldo,
+    clientes: clientesRespaldo
+  }
+};
+
+
+        const contenido = JSON.stringify(respaldo, null, 2);
+        const archivo = new Blob(
+          [contenido],
+          { type: "application/json;charset=utf-8" }
+        );
+
+        const url = URL.createObjectURL(archivo);
+        const enlace = document.createElement("a");
+
+        const fecha = new Date().toISOString().slice(0, 10);
+
+        enlace.href = url;
+        enlace.download = `respaldo-mi-app-pwa-${fecha}.json`;
+
+        document.body.appendChild(enlace);
+        enlace.click();
+        enlace.remove();
+
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+        alert(
+          "Respaldo exportado correctamente.\n\n" +
+          "Órdenes: " + ordenesRespaldo.length + "\n" +
+          "Materiales: " + materialesRespaldo.length + "\n" +
+          "Clientes: " + clientesRespaldo.length + "\n\n" +
+          "Guarda el archivo en un lugar seguro."
+        );
+      } catch (error) {
+        console.error("Error exportando respaldo:", error);
+        alert("No se pudo exportar el respaldo. Revisa la consola para más detalles.");
+      }
+    }
+        document.getElementById("btnExportarRespaldo").onclick = exportarRespaldo;
+        
+    document.getElementById("btnRestaurarRespaldo").onclick = () => {
+      document.getElementById("archivoRespaldo").click();
+    };
+
+    
+    document.getElementById("archivoRespaldo").onchange = async (evento) => {
+      const archivo = evento.target.files[0];
+
+      if (!archivo) return;
+
+      try {
+        const texto = await archivo.text();
+        const respaldo = JSON.parse(texto);
+
+        const datosValidos =
+          respaldo &&
+          respaldo.aplicacion === "mi-app-pwa" &&
+          respaldo.versionFormato === 1 &&
+          respaldo.datos &&
+          Array.isArray(respaldo.datos.ordenes) &&
+          Array.isArray(respaldo.datos.materiales) &&
+          Array.isArray(respaldo.datos.clientes);
+
+        if (!datosValidos) {
+          alert("El archivo no es un respaldo válido. No se modificó ningún dato.");
+          return;
+        }
+
+const configuracionRespaldo =
+  respaldo.configuracion && typeof respaldo.configuracion === "object"
+    ? respaldo.configuracion
+    : {};
+
+const logoRespaldo =
+  typeof configuracionRespaldo.logoTaller === "string"
+    ? configuracionRespaldo.logoTaller
+    : "";
+
+if (
+  logoRespaldo &&
+  !/^data:image\/(png|jpeg|webp);base64,/i.test(logoRespaldo)
+) {
+  alert(
+    "El logotipo del respaldo no tiene un formato válido. " +
+    "No se modificó ningún dato."
+  );
+  return;
+}
+const colorRespaldo = configuracionRespaldo.colorBotones;
+if (
+  typeof colorRespaldo === "string" &&
+  colorRespaldo !== "" &&
+  !/^#[0-9A-Fa-f]{6}$/.test(colorRespaldo)
+) {
+  alert(
+    "El color de botones del respaldo no es válido. " +
+    "No se modificó ningún dato."
+  );
+  return;
+}
+
+const perfilRespaldo = configuracionRespaldo.perfilTaller;
+if (
+  typeof perfilRespaldo === "string" &&
+  perfilRespaldo !== "" &&
+  (
+    typeof PERFILES_TALLER === "undefined" ||
+    !Object.prototype.hasOwnProperty.call(
+      PERFILES_TALLER,
+      perfilRespaldo
+    )
+  )
+) {
+  alert(
+    "El perfil del taller del respaldo no es válido. " +
+    "No se modificó ningún dato."
+  );
+  return;
+}
+        const colecciones = [
+          ["ordenes", respaldo.datos.ordenes],
+          ["materiales", respaldo.datos.materiales],
+          ["clientes", respaldo.datos.clientes]
+        ];
+
+        for (const [nombre, registros] of colecciones) {
+          const ids = new Set();
+
+          for (const registro of registros) {
+            if (
+              !registro ||
+              registro.id === undefined ||
+              registro.id === null ||
+              String(registro.id).trim() === ""
+            ) {
+              throw new Error(
+                "Hay un registro sin identificador en " + nombre
+              );
+            }
+
+            const id = String(registro.id);
+
+            if (ids.has(id)) {
+              throw new Error(
+                "Hay identificadores duplicados en " + nombre
+              );
+            }
+
+            ids.add(id);
+          }
+        }
+
+        const resumen = [];
+
+        for (const [nombre, registros] of colecciones) {
+          const actuales = await obtenerTodos(database, nombre);
+          const idsActuales = new Set(
+            actuales.map(registro => String(registro.id))
+          );
+
+          const nuevos = registros.filter(
+            registro => !idsActuales.has(String(registro.id))
+          ).length;
+
+          const existentes = registros.length - nuevos;
+
+          resumen.push(
+            nombre + ": " + nuevos + " nuevos, " +
+            existentes + " existentes que se actualizarían"
+          );
+        }
+
+        
+const modoElegido = prompt(
+  "RESPALDO VÁLIDO: " + archivo.name + "\n\n" +
+  resumen.join("\n") + "\n\n" +
+  "Escribe una opción:\n\n" +
+  "COMBINAR: agrega registros nuevos y actualiza " +
+  "los que tengan el mismo ID.\n\n" +
+  "REEMPLAZAR: sustituye las órdenes, materiales " +
+  "y clientes actuales por los del respaldo.\n\n" +
+  "Escribe COMBINAR o REEMPLAZAR."
+);
+
+const modoRestauracion = String(modoElegido || "")
+  .trim()
+  .toUpperCase();
+
+if (!["COMBINAR", "REEMPLAZAR"].includes(modoRestauracion)) {
+  alert("Restauración cancelada. No se modificó ningún dato.");
+  return;
+}
+
+const confirmado = confirm(
+  "Modo seleccionado: " + modoRestauracion + "\n\n" +
+  (modoRestauracion === "REEMPLAZAR"
+    ? "ATENCIÓN: se eliminarán los registros actuales " +
+      "de las tres colecciones y se sustituirán por " +
+      "los del respaldo."
+    : "Se combinarán los registros. Los actuales que " +
+      "no estén en el respaldo se conservarán.") +
+  "\n\n¿Deseas continuar?"
+);
+
+if (!confirmado) {
+  alert("Operación cancelada. No se modificó ningún dato.");
+  return;
+}
+
+       
+        
+        const transaccion = database.transaction(
+          ["ordenes", "materiales", "clientes"],
+          "readwrite"
+        );
+
+        const resultadoTransaccion = new Promise((resolve, reject) => {
+          transaccion.oncomplete = () => resolve();
+
+          transaccion.onerror = () => {
+            reject(
+              transaccion.error ||
+              new Error("Error al guardar el respaldo")
+            );
+          };
+
+          transaccion.onabort = () => {
+            reject(
+              transaccion.error ||
+              new Error("La restauración fue cancelada")
+            );
+          };
+        });
+
+       
+        try {
+          try {
+           
+for (const [nombre, registros] of colecciones) {
+  const almacen = transaccion.objectStore(nombre);
+
+  if (modoRestauracion === "REEMPLAZAR") {
+    almacen.clear();
+  }
+
+  for (const registro of registros) {
+    almacen.put(registro);
+  }
+}
+
+          } catch (errorPuesta) {
+            try {
+              transaccion.abort();
+            } catch (errorAbortar) {
+              console.error(
+                "No se pudo cancelar la transacción:",
+                errorAbortar
+              );
+            }
+
+            throw errorPuesta;
+          }
+
+          await resultadoTransaccion;
+
+          try {
+            await emitir("ordenes");
+            await emitir("materiales");
+            await emitir("clientes");
+          } catch (errorVista) {
+            console.error(
+              "Los datos se guardaron, pero hubo un error al actualizar la vista:",
+              errorVista
+            );
+          }
+
+const configuracionesNuevas = {};
+
+for (const clave of [
+  "nombreTaller",
+  "monedaSimbolo",
+  "colorBotones",
+  "perfilTaller",
+  "logoTaller"
+]) {
+  const valor = configuracionRespaldo[clave];
+
+  if (typeof valor === "string") {
+    configuracionesNuevas[clave] = valor;
+  }
+}
+const clavesConfiguracion = [
+  "nombreTaller",
+  "monedaSimbolo",
+  "colorBotones",
+  "perfilTaller",
+  "logoTaller"
+];
+
+
+let configuracionesRestauradas = true;
+
+try {
+  for (const clave of clavesConfiguracion) {
+    if (
+      Object.prototype.hasOwnProperty.call(
+        configuracionRespaldo,
+        clave
+      )
+    ) {
+      const valor = configuracionesNuevas[clave];
+
+      if (typeof valor === "string") {
+        localStorage.setItem(clave, valor);
+      }
+    }
+  }
+} catch (errorConfiguracion) {
+  configuracionesRestauradas = false;
+
+  console.error(
+    "No se pudieron restaurar todas las configuraciones:",
+    errorConfiguracion
+  );
+}
+
+
+renderNombreTaller();
+renderEtiquetasMoneda();
+cargarColorBotones();
+renderLogoTaller();
+
+       
+alert(
+  "Respaldo restaurado correctamente.\n\n" +
+  "Modo: " + modoRestauracion + "\n" +
+  "Órdenes procesadas: " + respaldo.datos.ordenes.length + "\n" +
+  "Materiales procesados: " + respaldo.datos.materiales.length + "\n" +
+  "Clientes procesados: " + respaldo.datos.clientes.length + "\n\n" +
+  (
+    modoRestauracion === "COMBINAR"
+      ? "Los registros actuales que no estaban en el respaldo se conservaron."
+      : "Las tres colecciones fueron sustituidas por los datos del respaldo."
+  ) +
+  "\n\n" +
+  (
+    configuracionesRestauradas
+      ? "Configuraciones del taller restauradas."
+      : "ATENCIÓN: Los datos se restauraron, pero algunas configuraciones no pudieron guardarse. Revísalas manualmente."
+  )
+);
+
+        } catch (error) {
+          console.error("Error restaurando respaldo:", error);
+
+          alert(
+            "No se pudo completar la restauración.\n\n" +
+            "Error: " + error.message +
+            "\n\nNo vuelvas a intentarlo hasta verificar los datos."
+          );
+        }
+
+         
+
+      } catch (error) {
+        console.error("Error validando respaldo:", error);
+        alert(
+          "No se pudo validar el respaldo:\n" +
+          error.message +
+          "\n\nNo se modificó ningún dato."
+        );
+      } finally {
+        evento.target.value = "";
+      }
+    };
+
+
+    const listeners = {
+  ordenes: [],
+  materiales: [],
+  clientes: []
+};
+
+    async function emitir(storeName) {
+      const datos = await obtenerTodos(database, storeName);
+
+      const snapshot = {
+        docs: datos.map(item => ({
+          data: () => item
+        }))
+      };
+
+      listeners[storeName].forEach(callback => {
+        try {
+          callback(snapshot);
+        } catch (error) {
+          console.error("Error actualizando vista:", error);
+        }
+      });
+    }
+
+    db = {
+      collection(storeName) {
+        return {
+          onSnapshot(callback) {
+            if (!listeners[storeName]) {
+              listeners[storeName] = [];
+            }
+
+            listeners[storeName].push(callback);
+
+            emitir(storeName);
+
+            return () => {
+              listeners[storeName] =
+                listeners[storeName].filter(fn => fn !== callback);
+            };
+          }
+        };
+      },
+
+      doc(path) {
+        const partes = path.split("/");
+        const storeName = partes[0];
+        const id = partes[1];
+
+        return {
+          async set(data) {
+            await guardarUno(database, storeName, data);
+            await emitir(storeName);
+          },
+
+          async update(cambios) {
+            const actual = await obtenerUno(database, storeName, id);
+
+            if (!actual) {
+              throw new Error("Registro no encontrado");
+            }
+
+            const actualizado = {
+              ...actual,
+              ...cambios
+            };
+
+            await guardarUno(database, storeName, actualizado);
+            await emitir(storeName);
+          },
+
+          async delete() {
+            await eliminarUno(database, storeName, id);
+            await emitir(storeName);
+          }
+        };
+      }
+    };
+
+    console.log("Base de datos local iniciada correctamente");
+
+db.collection("ordenes").onSnapshot(async (snap) => {
+  ordenes = snap.docs.map(d => d.data());
+
+  await asegurarNumerosOrden();
+
+  inicializarContadorOrdenes();
+
+  cambiarVista(
+    localStorage.getItem("vistaActual") === "kanban"
+      ? "kanban"
+      : "lista"
+  );
+
+  renderStats();
+  renderPills();
+  renderNombreTaller();
+  renderEtiquetasMoneda();
+});
+    db.collection("materiales").onSnapshot((snap) => {
+      catalogo = snap.docs.map(d => d.data());
+
+      renderCatSelect();
+
+      if (
+        document
+          .getElementById("catOverlay")
+          .classList
+          .contains("open")
+      ) {
+        renderCatList();
+      }
+    });
+    db.collection("clientes").onSnapshot((snap) => {
+  clientes = snap.docs.map(d => d.data());
+  renderClientesList();
+  renderClientesSelect();
+
+});
+
+  } catch (error) {
+    console.error("Error iniciando IndexedDB:", error);
+    alert("No se pudo iniciar el almacenamiento local.");
+  }
+})();
+
+(async function initDownloads() {
+  try { downloadsCap = await claude.use("downloads"); } catch (e) {}
+})();
+</script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log('Service Worker Registrado Exitosamente'))
+      .catch((err) => console.log('Error al registrar el Service Worker', err));
+      document.addEventListener("wheel", (event) => {
+  const campo = event.target.closest('input[type="number"]');
+
+  if (campo && document.activeElement === campo) {
+    campo.blur();
+  }
+}, { passive: true });
+  }
+</script>
+
+</body>
+</html>
